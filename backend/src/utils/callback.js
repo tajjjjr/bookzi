@@ -1,7 +1,7 @@
-const axios = require("axios");
-const jwt = require("jsonwebtoken");
+import axios from "axios";
+import jwt from "jsonwebtoken";
 
-module.exports = async function sendCallback(url, payload, secret) {
+export default async function sendCallback(url, payload, secret) {
   const token = jwt.sign(payload, secret, { expiresIn: "5m" });
 
   await axios.post(url, {

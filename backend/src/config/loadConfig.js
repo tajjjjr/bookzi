@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
-module.exports = function loadConfig() {
+export default function loadConfig() {
   const filePath = path.join(process.cwd(), "config.json");
 
   if (!fs.existsSync(filePath)) {
