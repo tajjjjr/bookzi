@@ -11,6 +11,7 @@ export function createOrderRouter({ db, auth }) {
   const authService  = new AuthService({ auth });
   const controller   = new OrderController({ orderService });
 
+  router.get("/", authMiddleware(authService), controller.getAll);
   router.post("/", authMiddleware(authService), controller.create);
 
   return router;

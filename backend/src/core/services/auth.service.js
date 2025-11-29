@@ -3,11 +3,26 @@
 * It provides methods to interact with user authentication processes.
 */
 export class AuthService {
-  constructor({ auth }) {
-    this.auth = auth; // adapter
+  constructor(authAdapter) {
+    this.authAdapter = authAdapter;
+  }
+
+  extractToken(req) {
+    const header = req.headers["authorization"];
+    if (!header) return null;
+
+    // Expected: "Bearer token123"
+    const [scheme, token] = header.split(" ");
+
+    if (scheme !== "Bearer" || !token) return null;
+
+    return token.trim();
   }
 
   async getUserFromRequest(req) {
-    return this.auth.getUser(req);
+    const token = this.extractToken(req);
+    if (!token) return null;
+
+    return this.authAdapter.getUserFromJWT(token);
   }
 }

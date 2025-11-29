@@ -3,11 +3,14 @@ const products = [
   { id: 2, name: "Another Product", price: 50, stock: 5 }
 ];
 
-const orders = [];
+const orders = [
+  { "id": 1, "userId": 1, "items": [ { "productId": 1, "quantity": 2 } ] },
+  { "id": 2, "userId": 1, "items": [ { "productId": 2, "quantity": 1 } ] }
+];
 
 const mockDbAdapter = {
   listProducts: async () => products,
-  getProductById: async (id) => products.find(p => p.id === parseInt(id)),
+  getProduct: async (id) => products.find(p => p.id === parseInt(id)),
   createOrder: async (orderData) => {
     const newOrder = { id: orders.length + 1, ...orderData };
     orders.push(newOrder);

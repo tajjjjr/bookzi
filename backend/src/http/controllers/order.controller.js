@@ -4,6 +4,15 @@ export class OrderController {
     this.create = this.create.bind(this);
   }
 
+  getAll = async (req, res) => {
+    try {
+      const orders = await this.orderService.listOrdersForUser(req.user.id);
+      res.json(orders);
+    } catch (err) {
+      return res.status(500).json({ error: "Server error" });
+    }
+  };
+
   create = async (req, res) => {
     try {
       const order = await this.orderService.createOrder({
