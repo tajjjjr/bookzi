@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "mock": "node mock.js",
+    "mock": "node ./scripts/mock.js",
+    "token": "node ./scripts/generate-token.js",
     "start": "node index.js"
   },
   "dependencies": {

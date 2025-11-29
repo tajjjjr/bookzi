@@ -19,8 +19,7 @@ export class AuthService {
     return token.trim();
   }
 
-  async getUserFromRequest(req) {
-    const token = this.extractToken(req);
+  async getUserFromJWT(token) {
     if (!token) return null;
 
     return this.authAdapter.getUserFromJWT(token);
