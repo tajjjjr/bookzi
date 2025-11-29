@@ -1,19 +1,13 @@
-import { OrderService } from "../../core/services/order.service.js";
-
 export class OrderController {
-  constructor({ db, auth }) {
-    this.orderService = new OrderService({ db });
-    this.auth = auth;
-
+  constructor({ orderService }) {
+    this.orderService = orderService;
     this.create = this.create.bind(this);
   }
 
-  async create(req, res) {
+  create = async (req, res) => {
     try {
-      const user = await this.auth.getUser(req);
-
       const order = await this.orderService.createOrder({
-        userId: user.id,
+        userId: req.user.id,
         items: req.body.items,
       });
 
@@ -30,5 +24,5 @@ export class OrderController {
           return res.status(500).json({ error: "Server error" });
       }
     }
-  }
+  };
 }
