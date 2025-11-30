@@ -5,6 +5,7 @@ import mockDb from "../../src/adapters/mock/db.mock.ts";
 import mockAuth from "../../src/adapters/mock/auth.mock.ts";
 import mockProduct from "../../src/adapters/mock/product.mock.ts";
 import mockAttachment from "../../src/adapters/mock/attachment.mock.ts";
+import { SQLiteAdapter } from "../../src/adapters/sqlite/sqlite.adapter.ts";
 
 const { json } = bodyParser;
 const app = express();
@@ -14,7 +15,7 @@ app.use(json());
 
 // Mount API routes with mocks
 app.use("/api", createRouter({ 
-  db: mockDb, 
+  db: mockDb as unknown as SQLiteAdapter, 
   authAdapter: mockAuth, 
   productAdapter: mockProduct, 
   attachmentAdapter: mockAttachment 

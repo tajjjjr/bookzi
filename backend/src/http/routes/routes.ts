@@ -3,7 +3,7 @@ import { createProductRouter } from "./product.ts";
 import { createOrderRouter } from "./order.ts";
 import { createAuthRouter } from "./auth.ts";
 import { createAttachmentRouter } from "./attachments.ts";
-import { DBAdapter } from "../../adapters/interfaces/DBAdapter.ts";
+import { SQLiteAdapter } from "../../adapters/sqlite/sqlite.adapter.ts";
 import { AuthAdapter } from "../../adapters/interfaces/AuthAdapter.ts";
 import { ProductCatalogAdapter } from "../../adapters/interfaces/ProductCatalogAdapter.ts";
 import { AttachmentAdapter } from "../../adapters/interfaces/AttachmentAdapter.ts";
@@ -14,7 +14,7 @@ const createRouter = ({
   productAdapter, 
   attachmentAdapter 
 }: { 
-  db: DBAdapter; 
+  db: SQLiteAdapter; 
   authAdapter: AuthAdapter;
   productAdapter: ProductCatalogAdapter;
   attachmentAdapter: AttachmentAdapter;

@@ -8,7 +8,7 @@ export class ProductService {
     return products;
   }
 
-  async getProduct(id: number): Promise<Product> {
+  async getProduct(id: string): Promise<Product> {
     const product = await this.db.getProduct(id);
     if (!product) {
       throw new Error("PRODUCT_NOT_FOUND");
@@ -16,7 +16,7 @@ export class ProductService {
     return product;
   }
 
-  async decreaseInventory(id: number, amount: number): Promise<Product> {
+  async decreaseInventory(id: string, amount: number): Promise<Product> {
     const product = await this.db.getProduct(id);
     if (!product) {
       throw new Error("PRODUCT_NOT_FOUND");
