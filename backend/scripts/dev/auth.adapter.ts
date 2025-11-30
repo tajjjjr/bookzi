@@ -3,6 +3,8 @@ import bodyParser from "body-parser";
 import { createRouter } from "../../src/http/routes/routes.ts";
 import { SQLiteAdapter } from "../../src/adapters/sqlite/sqlite.adapter.ts";
 import { AuthAdapter } from "../../src/adapters/auth/auth.ts";
+import { ProductCatalogAdapter } from "../../src/adapters/products/products.ts";
+import { LocalAttachmentAdapter } from "../../src/adapters/attachments/local.ts";
 
 const { json } = bodyParser;
 const app = express();
@@ -18,11 +20,18 @@ const authAdapter = new AuthAdapter(
   db
 );
 
+// Initialize Attachment adapter
+const attachmentAdapter = new LocalAttachmentAdapter(db);
+
+// Initialize Product Catalog adapter
+const productAdapter = new ProductCatalogAdapter(db, attachmentAdapter);
+
 // Middleware
 app.use(json());
+app.use('/uploads', express.static('uploads'));
 
-// Mount API routes with SQLite DB and Auth adapter
-app.use("/api", createRouter({ db, authAdapter }));
+// Mount API routes with all adapters
+app.use("/api", createRouter({ db, authAdapter, productAdapter, attachmentAdapter }));
 
 // Basic health check
 app.get("/health", (req, res) => res.json({ status: "ok" }));

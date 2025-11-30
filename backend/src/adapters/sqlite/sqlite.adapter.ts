@@ -27,22 +27,84 @@ export class SQLiteAdapter implements DBAdapter {
         password TEXT NOT NULL
       );
 
-      CREATE TABLE IF NOT EXISTS products (
-        id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        price INTEGER NOT NULL,
-        stock INTEGER NOT NULL
-      );
-
       CREATE TABLE IF NOT EXISTS orders (
         id INTEGER PRIMARY KEY,
         user_id INTEGER NOT NULL,
         items_json TEXT NOT NULL,
         created_at TEXT NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS products (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        price INTEGER NOT NULL,
+        compareAtPrice INTEGER,
+        currency TEXT NOT NULL DEFAULT 'USD',
+        sku TEXT UNIQUE NOT NULL,
+        barcode TEXT,
+        serialNumber TEXT,
+        stock INTEGER NOT NULL DEFAULT 0,
+        lowStockThreshold INTEGER,
+        trackInventory INTEGER NOT NULL DEFAULT 1,
+        allowBackorder INTEGER NOT NULL DEFAULT 0,
+        categoryId TEXT,
+        tags TEXT DEFAULT '[]',
+        brand TEXT,
+        vendor TEXT,
+        weight INTEGER,
+        dimensions TEXT,
+        hasVariants INTEGER NOT NULL DEFAULT 0,
+        slug TEXT UNIQUE NOT NULL,
+        metaTitle TEXT,
+        metaDescription TEXT,
+        isActive INTEGER NOT NULL DEFAULT 1,
+        isFeatured INTEGER NOT NULL DEFAULT 0,
+        isDigital INTEGER NOT NULL DEFAULT 0,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        publishedAt TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS product_images (
+        productId TEXT NOT NULL,
+        attachmentId TEXT NOT NULL,
+        position INTEGER NOT NULL DEFAULT 0,
+        isDefault INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (productId, attachmentId),
+        FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE,
+        FOREIGN KEY (attachmentId) REFERENCES attachments(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS product_variants (
+        id TEXT PRIMARY KEY,
+        productId TEXT NOT NULL,
+        name TEXT NOT NULL,
+        sku TEXT UNIQUE NOT NULL,
+        barcode TEXT,
+        price INTEGER,
+        compareAtPrice INTEGER,
+        stock INTEGER NOT NULL DEFAULT 0,
+        options TEXT DEFAULT '[]',
+        isActive INTEGER NOT NULL DEFAULT 1,
+        FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
+      );
+
+      CREATE TABLE IF NOT EXISTS attachments (
+        id TEXT PRIMARY KEY,
+        filename TEXT NOT NULL,
+        originalName TEXT NOT NULL,
+        mimeType TEXT NOT NULL,
+        size INTEGER NOT NULL,
+        url TEXT NOT NULL,
+        path TEXT NOT NULL,
+        entityType TEXT,
+        entityId TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      );
     `);
   }
-
   async listProducts(): Promise<Product[]> {
     return this.db.prepare("SELECT * FROM products").all() as Product[];
   }

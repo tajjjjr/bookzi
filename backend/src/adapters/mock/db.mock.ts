@@ -2,8 +2,16 @@ import { DBAdapter } from "../interfaces/DBAdapter.ts";
 import { Product, Order } from "../../types/models.ts"
 
 const products: Product[] = [
-  { id: 1, name: "Test Product", price: 100, stock: 10 },
-  { id: 2, name: "Another Product", price: 50, stock: 5 }
+  { 
+    id: "1", name: "Test Product", price: 100, stock: 10, currency: "USD", sku: "TEST001",
+    trackInventory: true, allowBackorder: false, images: [], hasVariants: false,
+    slug: "test-product", isActive: true, createdAt: new Date(), updatedAt: new Date()
+  },
+  { 
+    id: "2", name: "Another Product", price: 50, stock: 5, currency: "USD", sku: "TEST002",
+    trackInventory: true, allowBackorder: false, images: [], hasVariants: false,
+    slug: "another-product", isActive: true, createdAt: new Date(), updatedAt: new Date()
+  }
 ];
 
 const orders: Order[] = [
@@ -17,10 +25,10 @@ const mockDbAdapter: DBAdapter = {
   getProducts: async (): Promise<Product[]> => products,
   
   getProduct: async (id: number): Promise<Product | null> => 
-    products.find(p => p.id === id) || null,
+    products.find(p => p.id === String(id)) || null,
     
   getProductById: async (id: number): Promise<Product | null> => 
-    products.find(p => p.id === id) || null,
+    products.find(p => p.id === String(id)) || null,
   
   createOrder: async (orderData: Omit<Order, 'id'>): Promise<Order> => {
     const newOrder: Order = { id: orders.length + 1, ...orderData };
@@ -35,7 +43,7 @@ const mockDbAdapter: DBAdapter = {
     orders.filter(o => o.userId === String(userId)),
   
   decreaseInventory: async (id: number, amount: number): Promise<Product | null> => {
-    const product = products.find(p => p.id === id);
+    const product = products.find(p => p.id === String(id));
     if (product) product.stock -= amount;
     return product || null;
   }

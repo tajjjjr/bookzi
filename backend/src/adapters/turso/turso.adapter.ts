@@ -42,10 +42,20 @@ export class TursoAdapter implements DBAdapter {
       sql: `SELECT id, name, price, stock FROM products ORDER BY name ASC`,
     });
     return (res.rows || []).map(r => ({
-      id: Number(r.id),
+      id: String(r.id),
       name: String(r.name),
       price: Number(r.price),
       stock: Number(r.stock),
+      currency: 'USD',
+      sku: `SKU${r.id}`,
+      trackInventory: true,
+      allowBackorder: false,
+      images: [],
+      hasVariants: false,
+      slug: String(r.name).toLowerCase().replace(/\s+/g, '-'),
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }));
   }
 
@@ -60,10 +70,20 @@ export class TursoAdapter implements DBAdapter {
     });
     const row = (res.rows && res.rows[0]) || null;
     return row ? { 
-      id: Number(row.id), 
+      id: String(row.id), 
       name: String(row.name), 
       price: Number(row.price), 
-      stock: Number(row.stock) 
+      stock: Number(row.stock),
+      currency: 'USD',
+      sku: `SKU${row.id}`,
+      trackInventory: true,
+      allowBackorder: false,
+      images: [],
+      hasVariants: false,
+      slug: String(row.name).toLowerCase().replace(/\s+/g, '-'),
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
     } : null;
   }
 

@@ -110,6 +110,51 @@ curl -X POST \
      http://localhost:3000/api/orders
 ```
 
+## Example HTML CRUD For Products
+
+1. Start the server:
+```bash
+npm run start
+```
+
+2. Navigate to the web interface:
+```
+http://localhost:3000/
+```
+
+3. **Login/Register**: Create an account or login with existing credentials
+
+4. **Product Management**: Full CRUD operations with image upload support
+   - Create products with multiple images
+   - View all products with images
+   - Edit existing products
+   - Delete products
+
+### Supported Product API Routes
+
+#### Basic CRUD
+- `GET /api/products` - List products with filters/pagination
+- `GET /api/products/:id` - Get single product
+- `POST /api/products` - Create product (without images)
+- `PUT /api/products/:id` - Update product
+- `DELETE /api/products/:id` - Delete product
+
+#### Image Management
+- `POST /api/products/create-with-images` - Create product + upload images
+- `POST /api/products/:productId/images` - Add image to existing product
+- `DELETE /api/products/:productId/images/:attachmentId` - Remove product image
+- `PUT /api/products/:productId/images/:attachmentId/default` - Set default image
+
+#### File Operations
+- `POST /api/attachments/upload` - Upload standalone file
+- `GET /api/attachments/:id` - Get attachment metadata
+- `GET /api/attachments/entity/:entityType/:entityId` - Get files for entity
+- `DELETE /api/attachments/:id` - Delete attachment
+
+#### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+
 ## Adapters
 
 The backend uses a pluggable adapter architecture for different data sources:
