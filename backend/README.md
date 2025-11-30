@@ -95,7 +95,7 @@ Uses in-memory data for quick testing and development.
 ### SQLite Adapter (Local Database)
 ```sh
 # Seed the database
-npm run seed
+npm run seed:sqlite
 
 # Start SQLite server
 npm run sqlite
@@ -107,13 +107,29 @@ The SQLite adapter provides:
 - **Seeded data** with sample users (hashed passwords), products, and orders
 - **Same API endpoints** as mock adapter
 
-#### SQLite Database Schema
+### Turso Adapter (Cloud Database)
+```sh
+# Set environment variables (copy .env.example to .env)
+TURSO_URL=libsql://your-database.turso.io
+TURSO_AUTH_TOKEN=your-token
+
+# Run migration on Turso database
+# Execute migrations/001_init_tables.sql
+
+# Start Turso server
+npm run turso
+```
+
+The Turso adapter provides:
+- **Cloud-hosted SQLite** with Turso
+- **Same interface** as SQLite adapter
+- **Production-ready** with remote persistence
+- **Environment-based configuration**
+
+#### Database Schema (SQLite & Turso)
 - **Users**: `id`, `name`, `email`, `password` (bcrypt hashed)
 - **Products**: `id`, `name`, `price`, `stock`
 - **Orders**: `id`, `user_id`, `items_json`, `created_at`
-
-### Future: Turso Adapter (Remote Database)
-Coming soon - same interface, cloud-hosted SQLite.
 
 ## Architecture
 
@@ -128,7 +144,8 @@ Coming soon - same interface, cloud-hosted SQLite.
 
 - `npm run mock` - Start development server (in-memory data)
 - `npm run sqlite` - Start SQLite development server
-- `npm run seed` - Populate SQLite database with sample data
+- `npm run turso` - Start Turso cloud database server
+- `npm run seed:sqlite` - Populate SQLite database with sample data
 - `npm run token` - Generate JWT token
 - `npm run build` - Compile TypeScript
 - `npm run lint` - Run linter
