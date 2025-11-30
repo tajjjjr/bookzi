@@ -1,10 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
-const { json } = bodyParser;
-import { createRouter } from "../src/http/routes/routes.js";
-import mockDb from "../src/adapters/mock/db.mock.js";
-import mockAuth from "../src/adapters/mock/auth.mock.js";
+import { createRouter } from "../../src/http/routes/routes.ts";
+import mockDb from "../../src/adapters/mock/db.mock.ts";
+import mockAuth from "../../src/adapters/mock/auth.mock.ts";
 
+const { json } = bodyParser;
 const app = express();
 
 // Middleware

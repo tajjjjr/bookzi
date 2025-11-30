@@ -1,25 +1,20 @@
-/*
-* AuthService acts as a bridge between the application and the authentication adapter.
-* It provides methods to interact with user authentication processes.
-*/
-export class AuthService {
-  constructor(authAdapter) {
-    this.authAdapter = authAdapter;
-  }
+import { User, AuthAdapter } from "../../adapters/interfaces/AuthAdapter.ts";
+import { Request } from "express";
 
-  extractToken(req) {
+export class AuthService {
+  constructor(private authAdapter: AuthAdapter) {}
+
+  extractToken(req: Request): string | null {
     const header = req.headers["authorization"];
     if (!header) return null;
 
-    // Expected: "Bearer token123"
     const [scheme, token] = header.split(" ");
-
     if (scheme !== "Bearer" || !token) return null;
 
     return token.trim();
   }
 
-  async getUserFromJWT(token) {
+  async getUserFromJWT(token: string): Promise<User | null> {
     if (!token) {
       return null;
     }

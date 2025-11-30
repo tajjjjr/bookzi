@@ -1,7 +1,8 @@
-import mockAuthAdapter from "../src/adapters/mock/auth.mock.js";
+import mockAuthAdapter from "../../src/adapters/mock/auth.mock.ts";
+import { User } from "../../src/adapters/interfaces/AuthAdapter.ts";
 
 // Pick a user from mock users
-const user = { id: 1, name: "Alice" };
+const user: User = { id: 1, name: "Alice" };
 
 // Generate JWT
 const token = mockAuthAdapter.signToken(user);

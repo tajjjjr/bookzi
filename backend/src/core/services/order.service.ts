@@ -1,11 +1,9 @@
-export class OrderService {
-  constructor({ db }) {
-    this.db = db;
-    this.createOrder = this.createOrder.bind(this);
-    this.listOrdersForUser = this.listOrdersForUser.bind(this);
-  }
+import { DBAdapter, Order, OrderItem } from "../../adapters/interfaces/DBAdapter.ts";
 
-  async createOrder({ userId, items }) {
+export class OrderService {
+  constructor(private db: DBAdapter) {}
+
+  async createOrder({ userId, items }: { userId: number; items: OrderItem[] }): Promise<Order> {
     if (!userId) {
       throw new Error("MISSING_USER");
     }
@@ -16,7 +14,6 @@ export class OrderService {
 
     let total = 0;
 
-    // Validate stock and calculate total
     for (const item of items) {
       const product = await this.db.getProduct(item.productId);
 
@@ -31,12 +28,10 @@ export class OrderService {
       total += product.price * item.quantity;
     }
 
-    // Reduce stock AFTER validation to keep the flow atomic
     for (const item of items) {
       await this.db.decreaseInventory(item.productId, item.quantity);
     }
 
-    // Create the order entry (DB adapter decides how)
     const order = await this.db.createOrder({
       userId,
       items,
@@ -46,7 +41,7 @@ export class OrderService {
     return order;
   }
 
-  async listOrdersForUser(userId) {
+  async listOrdersForUser(userId: number): Promise<Order[]> {
     if (!userId) {
       throw new Error("MISSING_USER");
     }
