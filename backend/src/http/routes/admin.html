@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bookzi Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea, select { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007cba; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #005a87; }
+        .product { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 4px; }
+        .product img { max-width: 100px; height: auto; }
+        .auth-section { background: #f5f5f5; padding: 20px; margin-bottom: 20px; border-radius: 4px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bookzi Product Management</h1>
+        
+        <!-- Auth Section -->
+        <div class="auth-section">
+            <div id="login-form">
+                <h3>Login</h3>
+                <input type="email" id="login-email" placeholder="Email">
+                <input type="password" id="login-password" placeholder="Password">
+                <button onclick="login()">Login</button>
+                <button onclick="showRegister()">Register</button>
+            </div>
+            
+            <div id="register-form" class="hidden">
+                <h3>Register</h3>
+                <input type="text" id="register-name" placeholder="Name">
+                <input type="email" id="register-email" placeholder="Email">
+                <input type="password" id="register-password" placeholder="Password">
+                <button onclick="register()">Register</button>
+                <button onclick="showLogin()">Back to Login</button>
+            </div>
+            
+            <div id="user-info" class="hidden">
+                <span id="user-name"></span>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Product Management -->
+        <div id="product-management" class="hidden">
+            <!-- Create Product Form -->
+            <div class="form-group">
+                <h3>Create Product</h3>
+                <form id="product-form" enctype="multipart/form-data">
+                    <label>Name:</label>
+                    <input type="text" id="product-name" required>
+                    
+                    <label>Description:</label>
+                    <textarea id="product-description"></textarea>
+                    
+                    <label>Price (cents):</label>
+                    <input type="number" id="product-price" required>
+                    
+                    <label>SKU:</label>
+                    <input type="text" id="product-sku" required>
+                    
+                    <label>Stock:</label>
+                    <input type="number" id="product-stock" required>
+                    
+                    <label>Images:</label>
+                    <input type="file" id="product-images" multiple accept="image/*">
+                    
+                    <button type="button" onclick="createProduct()">Create Product</button>
+                    <button type="button" onclick="resetForm()" style="display:none;" id="cancel-btn">Cancel</button>
+                </form>
+            </div>
+
+            <!-- Products List -->
+            <div>
+                <h3>Products</h3>
+                <button onclick="loadProducts()">Refresh</button>
+                <div id="products-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+
+        // Check if already logged in
+        if (authToken) {
+            showProductManagement();
+        }
+
+        function showLogin() {
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+        }
+
+        function showProductManagement() {
+            document.querySelector('.auth-section').classList.add('hidden');
+            document.getElementById('product-management').classList.remove('hidden');
+            loadProducts();
+        }
+
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    showProductManagement();
+                } else {
+                    alert('Login failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Login error: ' + error.message);
+            }
+        }
+
+        async function register() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Registration successful! Please login.');
+                    showLogin();
+                } else {
+                    alert('Registration failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Registration error: ' + error.message);
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            location.reload();
+        }
+
+        async function createProduct() {
+            const formData = new FormData();
+            
+            const productData = {
+                name: document.getElementById('product-name').value,
+                description: document.getElementById('product-description').value,
+                price: parseInt(document.getElementById('product-price').value),
+                currency: 'USD',
+                sku: document.getElementById('product-sku').value,
+                stock: parseInt(document.getElementById('product-stock').value),
+                trackInventory: true,
+                allowBackorder: false,
+                hasVariants: false,
+                slug: document.getElementById('product-name').value.toLowerCase().replace(/\s+/g, '-'),
+                isActive: true
+            };
+            
+            formData.append('product', JSON.stringify(productData));
+            
+            const files = document.getElementById('product-images').files;
+            for (let i = 0; i < files.length; i++) {
+                formData.append('images', files[i]);
+            }
+            
+            try {
+                const response = await fetch('/api/products/create-with-images', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + authToken },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Product created successfully!');
+                    document.getElementById('product-form').reset();
+                    loadProducts();
+                } else {
+                    alert('Product creation failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Product creation error: ' + error.message);
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products', {
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    displayProducts(data.data || data);
+                } else {
+                    alert('Failed to load products: ' + data.error);
+                }
+            } catch (error) {
+                alert('Load products error: ' + error.message);
+            }
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('products-list');
+            container.innerHTML = '';
+            
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <h4>${product.name}</h4>
+                    <p><strong>SKU:</strong> ${product.sku}</p>
+                    <p><strong>Price:</strong> $${(product.price / 100).toFixed(2)}</p>
+                    <p><strong>Stock:</strong> ${product.stock}</p>
+                    <p>${product.description || ''}</p>
+                    ${product.images && product.images.length > 0 ? 
+                        product.images.map(img => `<img src="${img.url}" alt="${img.alt}">`).join('') : 
+                        '<p>No images</p>'
+                    }
+                    <br>
+                    <button onclick="editProduct('${product.id}')">Edit</button>
+                    <button onclick="deleteProduct('${product.id}')">Delete</button>
+                `;
+                container.appendChild(productDiv);
+            });
+        }
+
+        function editProduct(productId) {
+            fetch('/api/products/' + productId, {
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            })
+            .then(response => response.json())
+            .then(product => {
+                document.getElementById('product-name').value = product.name;
+                document.getElementById('product-description').value = product.description || '';
+                document.getElementById('product-price').value = product.price;
+                document.getElementById('product-sku').value = product.sku;
+                document.getElementById('product-stock').value = product.stock;
+                
+                const form = document.getElementById('product-form');
+                form.dataset.editId = productId;
+                document.querySelector('button[onclick="createProduct()"]').textContent = 'Update Product';
+                document.querySelector('button[onclick="createProduct()"]').setAttribute('onclick', 'updateProduct()');
+                document.getElementById('cancel-btn').style.display = 'inline-block';
+            })
+            .catch(error => alert('Error loading product: ' + error.message));
+        }
+
+        async function updateProduct() {
+            const productId = document.getElementById('product-form').dataset.editId;
+            
+            const productData = {
+                name: document.getElementById('product-name').value,
+                description: document.getElementById('product-description').value,
+                price: parseInt(document.getElementById('product-price').value),
+                sku: document.getElementById('product-sku').value,
+                stock: parseInt(document.getElementById('product-stock').value)
+            };
+            
+            try {
+                const response = await fetch('/api/products/' + productId, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken 
+                    },
+                    body: JSON.stringify(productData)
+                });
+                
+                if (response.ok) {
+                    alert('Product updated successfully!');
+                    resetForm();
+                    loadProducts();
+                } else {
+                    const data = await response.json();
+                    alert('Update failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Update error: ' + error.message);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('product-form').reset();
+            delete document.getElementById('product-form').dataset.editId;
+            const btn = document.querySelector('button[onclick="updateProduct()"]') || document.querySelector('button[onclick="createProduct()"]');
+            btn.textContent = 'Create Product';
+            btn.setAttribute('onclick', 'createProduct()');
+            document.getElementById('cancel-btn').style.display = 'none';
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            
+            try {
+                const response = await fetch('/api/products/' + productId, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + authToken }
+                });
+                
+                if (response.ok) {
+                    alert('Product deleted successfully!');
+                    loadProducts();
+                } else {
+                    const data = await response.json();
+                    alert('Delete failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Delete error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
