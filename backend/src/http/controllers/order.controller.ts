@@ -19,10 +19,10 @@ export class OrderController {
 
   create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const order = await this.orderService.createOrder({
-        userId: req.user!.id,
-        items: req.body.items,
-      });
+      const userId = req.user!.id;
+      const items = req.validated.items;
+
+      const order = await this.orderService.createOrder({ userId, items });
 
       res.json(order);
     } catch (err) {
