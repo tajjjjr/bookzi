@@ -10,7 +10,7 @@ export class OrderController {
   getAll = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user!.id;
     try {
-      const orders = await this.orderService.listOrdersForUser(userId);
+      const orders = await this.orderService.listOrdersForUser(Number(userId));
       res.json(orders);
     } catch {
       res.status(500).json({ error: "Server error" });
@@ -22,7 +22,7 @@ export class OrderController {
       const userId = req.user!.id;
       const { items } = req.validated as { items: import("../../adapters/interfaces/DBAdapter.ts").OrderItem[] };
 
-      const order = await this.orderService.createOrder({ userId, items });
+      const order = await this.orderService.createOrder({ userId: Number(userId), items });
 
       res.json(order);
     } catch (err) {

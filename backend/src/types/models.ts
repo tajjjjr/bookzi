@@ -1,8 +1,12 @@
 export interface User {
-  id: number;
+  id: string; // UUID
   name: string;
   email: string;
-  password: string;
+  password: string; // Should be hashed
+  createdAt?: Date;
+  updatedAt?: Date;
+  role?: string;
+  isActive?: boolean;
 }
 
 export interface Product {
@@ -19,7 +23,7 @@ export interface OrderItem {
 
 export interface Order {
   id: number;
-  userId: number;
+  userId: string;
   items: OrderItem[];
   total?: number;
 }

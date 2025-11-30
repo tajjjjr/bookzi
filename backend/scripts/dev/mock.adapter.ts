@@ -11,7 +11,7 @@ const app = express();
 app.use(json());
 
 // Mount API routes with mocks
-app.use("/api", createRouter({ db: mockDb, auth: mockAuth }));
+app.use("/api", createRouter({ db: mockDb, authAdapter: mockAuth }));
 
 // Basic health check
 app.get("/health", (req, res) => res.json({ status: "ok" }));

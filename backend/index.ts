@@ -10,7 +10,7 @@ async function start(): Promise<void> {
   const { auth, db } = await loadPlugins(config);
 
   app.use(express.json());
-  app.use("/api", createRouter({ db, auth }));
+  app.use("/api", createRouter({ db, authAdapter: auth }));
 
   app.listen(3000, () => console.log("Backend running on 3000"));
 }

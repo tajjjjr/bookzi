@@ -83,7 +83,7 @@ export class SQLiteAdapter implements DBAdapter {
 
     return {
       id: Number(info.lastInsertRowid),
-      userId: orderData.userId,
+      userId: String(orderData.userId),
       items: orderData.items,
       total: orderData.total
     };
@@ -100,7 +100,7 @@ export class SQLiteAdapter implements DBAdapter {
 
     return {
       id: result.id,
-      userId: result.userId,
+      userId: String(result.userId),
       items: JSON.parse(result.items)
     };
   }
@@ -114,7 +114,7 @@ export class SQLiteAdapter implements DBAdapter {
 
     return results.map(o => ({
       id: o.id,
-      userId: o.userId,
+      userId: String(o.userId),
       items: JSON.parse(o.items)
     }));
   }

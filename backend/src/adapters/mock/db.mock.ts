@@ -7,8 +7,8 @@ const products: Product[] = [
 ];
 
 const orders: Order[] = [
-  { id: 1, userId: 1, items: [{ productId: 1, quantity: 2 }] },
-  { id: 2, userId: 1, items: [{ productId: 2, quantity: 1 }] }
+  { id: 1, userId: "1", items: [{ productId: 1, quantity: 2 }] },
+  { id: 2, userId: "1", items: [{ productId: 2, quantity: 1 }] }
 ];
 
 const mockDbAdapter: DBAdapter = {
@@ -32,7 +32,7 @@ const mockDbAdapter: DBAdapter = {
     orders.find(o => o.id === id) || null,
   
   listOrdersForUser: async (userId: number): Promise<Order[]> => 
-    orders.filter(o => o.userId === userId),
+    orders.filter(o => o.userId === String(userId)),
   
   decreaseInventory: async (id: number, amount: number): Promise<Product | null> => {
     const product = products.find(p => p.id === id);

@@ -11,6 +11,7 @@
     "mock": "tsx ./scripts/dev/mock.adapter.ts",
     "sqlite": "tsx ./scripts/dev/sqlite.adapter.ts",
     "turso": "tsx ./scripts/dev/turso.adapter.ts",
+    "auth": "tsx ./scripts/dev/auth.adapter.ts",
     "seed:sqlite": "tsx ./scripts/dev/seed.sqlite.ts",
     "token": "tsx ./scripts/dev/generate-token.ts",
     "start": "tsx ./index.ts",

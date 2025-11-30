@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { AuthService } from "../../core/services/auth.service.ts";
-import { User } from "../../adapters/interfaces/AuthAdapter.ts";
+import { AuthAdapter } from "../../adapters/interfaces/AuthAdapter.ts";
+import { User } from "../../types/models.ts";
 
 declare global {
   namespace Express {
@@ -10,14 +10,14 @@ declare global {
   }
 }
 
-export function authMiddleware(authService: AuthService) {
+export function authMiddleware(authAdapter: AuthAdapter) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const authHeader = req.headers["authorization"];
       if (!authHeader) return res.status(401).json({ error: "Unauthorized" });
 
       const token = authHeader.split(" ")[1]; // Bearer <token>
-      const user = await authService.getUserFromJWT(token);
+      const user = await authAdapter.getUserFromJWT(token);
 
       if (!user) return res.status(401).json({ error: "Unauthorized" });
 

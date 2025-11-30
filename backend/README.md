@@ -68,19 +68,44 @@ curl -X POST \
      http://localhost:3000/api/orders
 ```
 
-## Testing Authentication
+## Authentication
 
-1. Generate a token:
-   ```sh
-   npm run token
-   ```
+### Register New User
+```sh
+curl -X POST http://localhost:3000/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"name":"John Doe","email":"john@example.com","password":"mypassword"}'
+```
 
-2. Copy the JWT token from the output
+### Login Existing User
+```sh
+curl -X POST http://localhost:3000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"alice@example.com","password":"password123"}'
+```
 
-3. Use it in the Authorization header:
-   ```
-   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-   ```
+### Generate Test Token (CLI)
+```sh
+npm run jwt "1"
+```
+
+### Using Authentication Token
+Both login and register return a JWT token:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "1",
+    "name": "Alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+Use the token in protected requests:
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
 
 ## Adapters
 

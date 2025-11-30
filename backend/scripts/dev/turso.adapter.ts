@@ -20,7 +20,7 @@ await db.init();
 app.use(json());
 
 // Mount API routes with Turso DB and mock auth
-app.use("/api", createRouter({ db, auth: mockAuth }));
+app.use("/api", createRouter({ db, authAdapter: mockAuth }));
 
 // Basic health check
 app.get("/health", (req, res) => res.json({ status: "ok" }));

@@ -33,7 +33,7 @@ export class OrderService {
     }
 
     const order = await this.db.createOrder({
-      userId,
+      userId: String(userId),
       items,
       total
     });

@@ -93,7 +93,7 @@ export class TursoAdapter implements DBAdapter {
 
     return {
       id,
-      userId: orderData.userId,
+      userId: String(orderData.userId),
       items: orderData.items,
       total: orderData.total
     };
@@ -110,7 +110,7 @@ export class TursoAdapter implements DBAdapter {
 
     return {
       id: Number(row.id),
-      userId: Number(row.userId),
+      userId: String(row.userId),
       items: JSON.parse(String(row.items))
     };
   }
@@ -123,7 +123,7 @@ export class TursoAdapter implements DBAdapter {
 
     return (res.rows || []).map(r => ({
       id: Number(r.id),
-      userId: Number(r.userId),
+      userId: String(r.userId),
       items: JSON.parse(String(r.items))
     }));
   }
