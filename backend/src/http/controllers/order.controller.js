@@ -5,8 +5,9 @@ export class OrderController {
   }
 
   getAll = async (req, res) => {
+    const userId = req.user.id
     try {
-      const orders = await this.orderService.listOrdersForUser(req.user.id);
+      const orders = await this.orderService.listOrdersForUser(userId);
       res.json(orders);
     } catch (err) {
       return res.status(500).json({ error: "Server error" });

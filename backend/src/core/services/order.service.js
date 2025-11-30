@@ -1,6 +1,8 @@
 export class OrderService {
   constructor({ db }) {
     this.db = db;
+    this.createOrder = this.createOrder.bind(this);
+    this.listOrdersForUser = this.listOrdersForUser.bind(this);
   }
 
   async createOrder({ userId, items }) {

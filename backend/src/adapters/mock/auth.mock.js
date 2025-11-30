@@ -15,7 +15,8 @@ const mockAuthAdapter = {
   getUserFromJWT: async (token) => {
     try {
       const payload = jwt.verify(token, SECRET);
-      return mockUsers.find(u => u.id === payload.id) || null;
+      const users = mockUsers.find(u => u.id === payload.id);
+      return users || null;
     } catch {
       return null;
     }
@@ -30,6 +31,8 @@ const mockAuthAdapter = {
       return false;
     }
   }
+
+  ,getUsers: () => mockUsers
 };
 
 export default mockAuthAdapter;

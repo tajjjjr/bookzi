@@ -20,7 +20,9 @@ export class AuthService {
   }
 
   async getUserFromJWT(token) {
-    if (!token) return null;
+    if (!token) {
+      return null;
+    }
 
     return this.authAdapter.getUserFromJWT(token);
   }

@@ -16,7 +16,7 @@ const mockDbAdapter = {
     orders.push(newOrder);
     return newOrder;
   },
-  getOrdersForUser: async (userId) => orders.filter(o => o.userId === userId),
+  listOrdersForUser: async (userId) => orders.filter(o => o.userId === userId),
   decreaseInventory: async (id, amount) => {
     const product = products.find(p => p.id === id);
     if (product) product.stock -= amount;
