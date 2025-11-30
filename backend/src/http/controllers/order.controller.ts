@@ -20,7 +20,7 @@ export class OrderController {
   create = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.user!.id;
-      const items = req.validated.items;
+      const { items } = req.validated as { items: import("../../adapters/interfaces/DBAdapter.ts").OrderItem[] };
 
       const order = await this.orderService.createOrder({ userId, items });
 

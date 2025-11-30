@@ -1,4 +1,5 @@
-import { DBAdapter, Product, Order } from "../interfaces/DBAdapter.ts";
+import { DBAdapter } from "../interfaces/DBAdapter.ts";
+import { Product, Order } from "../../types/models.ts"
 
 const products: Product[] = [
   { id: 1, name: "Test Product", price: 100, stock: 10 },

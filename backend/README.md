@@ -82,17 +82,53 @@ curl -X POST \
    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    ```
 
+## Adapters
+
+The backend uses a pluggable adapter architecture for different data sources:
+
+### Mock Adapter (In-Memory)
+```sh
+npm run mock
+```
+Uses in-memory data for quick testing and development.
+
+### SQLite Adapter (Local Database)
+```sh
+# Seed the database
+npm run seed
+
+# Start SQLite server
+npm run sqlite
+```
+
+The SQLite adapter provides:
+- **Persistent storage** with local SQLite file (`dev.sqlite`)
+- **Auto-schema creation** for users, products, and orders
+- **Seeded data** with sample users (hashed passwords), products, and orders
+- **Same API endpoints** as mock adapter
+
+#### SQLite Database Schema
+- **Users**: `id`, `name`, `email`, `password` (bcrypt hashed)
+- **Products**: `id`, `name`, `price`, `stock`
+- **Orders**: `id`, `user_id`, `items_json`, `created_at`
+
+### Future: Turso Adapter (Remote Database)
+Coming soon - same interface, cloud-hosted SQLite.
+
 ## Architecture
 
 - **TypeScript**: Full type safety with strict mode
 - **Adapters**: Pluggable interfaces for auth and database
 - **Mock Data**: In-memory storage for development
+- **SQLite**: Local database with persistent storage
 - **ESLint**: Code quality and consistency
 - **Express**: HTTP server framework
 
 ## Scripts
 
-- `npm run mock` - Start development server
+- `npm run mock` - Start development server (in-memory data)
+- `npm run sqlite` - Start SQLite development server
+- `npm run seed` - Populate SQLite database with sample data
 - `npm run token` - Generate JWT token
 - `npm run build` - Compile TypeScript
 - `npm run lint` - Run linter

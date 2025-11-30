@@ -1,8 +1,6 @@
+import { User } from "../../types/models.ts"
 
-export interface User {
-  id: number;
-  name: string;
-}
+export { User };
 
 export interface AuthAdapter {
   signToken(_user: User): string;
