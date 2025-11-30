@@ -1,18 +1,34 @@
 import express from "express";
-import loadConfig from "./src/config/loadConfig.js";
-import loadPlugins from "./src/plugins/loadPlugins.js";
-import { createRouter } from "./src/http/routes/routes.js";
+import bodyParser from "body-parser";
+import { createRouter } from "./src/http/routes/routes.ts";
+import { SQLiteAdapter } from "./src/adapters/sqlite/sqlite.adapter.ts";
+import { AuthAdapter } from "./src/adapters/auth/auth.ts";
 
+const { json } = bodyParser;
 const app = express();
 
-async function start(): Promise<void> {
-  const config = loadConfig();
-  const { auth, db } = await loadPlugins(config);
+// Initialize SQLite adapter
+const db = new SQLiteAdapter({
+  filepath: "./dev.sqlite"
+});
 
-  app.use(express.json());
-  app.use("/api", createRouter({ db, authAdapter: auth }));
+// Initialize Auth adapter with JWT secret and SQLite dependency
+const authAdapter = new AuthAdapter(
+  process.env.JWT_SECRET || "dev-secret",
+  db
+);
 
-  app.listen(3000, () => console.log("Backend running on 3000"));
-}
+// Middleware
+app.use(json());
 
-start().catch(console.error);
+// Mount API routes with SQLite DB and Auth adapter
+app.use("/api", createRouter({ db, authAdapter }));
+
+// Basic health check
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+
+// Start server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Backend Auth server running on http://localhost:${PORT}`);
+});

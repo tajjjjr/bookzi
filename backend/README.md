@@ -18,21 +18,63 @@ npm install
 
 ### Start Development Server
 ```sh
-npm run mock
+npm run start
 ```
 Server runs on http://localhost:3000
-
-### Generate Authentication Token
-```sh
-npm run token
-```
-Copy the generated JWT token for authenticated requests.
 
 ### Build & Lint
 ```sh
 npm run build        # Compile TypeScript
 npm run lint         # Check code quality
 npm run type-check   # Validate types
+```
+
+## Seed SQLite Database
+
+In order to test the product and order pages, you need to seed the database first. This command will create some data you can use to test the application.
+
+```bash
+npm run seed:sqlite  # Seed SQLite database with sample data
+```
+
+## Authentication
+
+### Register New User
+```sh
+curl -X POST http://localhost:3000/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"name":"John Doe","email":"john@example.com","password":"mypassword"}'
+```
+
+### Login Existing User
+```sh
+curl -X POST http://localhost:3000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"alice@example.com","password":"password123"}'
+```
+
+### Generate Test Token (CLI)
+```sh
+npm run jwt "1"
+```
+
+### Using Authentication Token
+
+Both login and register return a JWT token:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "1",
+    "name": "Alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+Use the token in protected requests:
+```
+Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
 ## API Endpoints
@@ -66,45 +108,6 @@ curl -X POST \
      -H "Content-Type: application/json" \
      -d '{"items":[{"productId":1,"quantity":2}]}' \
      http://localhost:3000/api/orders
-```
-
-## Authentication
-
-### Register New User
-```sh
-curl -X POST http://localhost:3000/api/auth/register \
-     -H "Content-Type: application/json" \
-     -d '{"name":"John Doe","email":"john@example.com","password":"mypassword"}'
-```
-
-### Login Existing User
-```sh
-curl -X POST http://localhost:3000/api/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"email":"alice@example.com","password":"password123"}'
-```
-
-### Generate Test Token (CLI)
-```sh
-npm run jwt "1"
-```
-
-### Using Authentication Token
-Both login and register return a JWT token:
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "1",
-    "name": "Alice",
-    "email": "alice@example.com"
-  }
-}
-```
-
-Use the token in protected requests:
-```
-Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
 ## Adapters
