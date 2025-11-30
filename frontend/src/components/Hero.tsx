@@ -1,11 +1,9 @@
-export default function Hero() {
+export function Hero() {
   return (
     <section className="hero">
-        <div className="hero-content">
-            <h1>Welcome to Our Website</h1>
-            <p>Your journey to excellence starts here.</p>
-            <button className="cta-button">Get Started</button> 
-        </div>
+      <h1>Welcome to Bookzi</h1>
+      <p>Your one-stop shop for all your reading needs.</p>
+      <button className="btn-primary">Shop Now</button>
     </section>
   );
 }
