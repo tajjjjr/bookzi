@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { HERO_SLIDES } from '../constants/landing_page_constants';
-import { Button } from './Button';
 
 const Hero: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -49,7 +48,10 @@ const Hero: React.FC = () => {
             </p>
 
             <div className="flex items-center space-x-6">
-              <Button variant='primary' label={slide.ctaText}/>
+                <button className="bg-[#CFFF24] text-black px-8 py-4 text-sm font-bold uppercase tracking-wider hover:bg-white transition-colors flex items-center group">
+                    {slide.ctaText}
+                    <ArrowUpRight className="ml-2 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </button>
             </div>
         </div>
 
