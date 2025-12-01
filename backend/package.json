@@ -1,0 +1,45 @@
+{
+  "name": "bookzi-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "mock": "tsx ./scripts/dev/mock.adapter.ts",
+    "sqlite": "tsx ./scripts/dev/sqlite.adapter.ts",
+    "turso": "tsx ./scripts/dev/turso.adapter.ts",
+    "auth": "tsx ./scripts/dev/auth.adapter.ts",
+    "seed:sqlite": "tsx ./scripts/dev/seed.sqlite.ts",
+    "token": "tsx ./scripts/dev/generate-token.ts",
+    "start": "tsx ./index.ts",
+    "start:prod": "node ./dist/index.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.15.15",
+    "@types/bcrypt": "^6.0.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/multer": "^2.0.0",
+    "axios": "^1.7.2",
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.5.0",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/express": "^4.17.25",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.19.25",
+    "@typescript-eslint/eslint-plugin": "^8.48.0",
+    "@typescript-eslint/parser": "^8.48.0",
+    "eslint": "^9.39.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
