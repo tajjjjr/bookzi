@@ -1,5 +1,6 @@
 import { createClient, Client } from "@libsql/client";
 import { DBAdapter, Product, Order } from "../interfaces/DBAdapter.ts";
+import { PaymentStatus, FulfillmentStatus, OrderStatus } from "../../types/models.ts";
 
 interface TursoAdapterConfig {
   url?: string;
@@ -30,8 +31,8 @@ export class TursoAdapter implements DBAdapter {
     );`);
 
     await this.client.execute(`CREATE TABLE IF NOT EXISTS orders (
-      id INTEGER PRIMARY KEY,
-      user_id INTEGER NOT NULL,
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
       items_json TEXT NOT NULL,
       created_at TEXT NOT NULL
     );`);
@@ -63,7 +64,7 @@ export class TursoAdapter implements DBAdapter {
     return this.listProducts();
   }
 
-  async getProduct(id: number): Promise<Product | null> {
+  async getProduct(id: string): Promise<Product | null> {
     const res = await this.client.execute({
       sql: `SELECT id, name, price, stock FROM products WHERE id = ? LIMIT 1`,
       args: [id],
@@ -87,11 +88,11 @@ export class TursoAdapter implements DBAdapter {
     } : null;
   }
 
-  async getProductById(id: number): Promise<Product | null> {
+  async getProductById(id: string): Promise<Product | null> {
     return this.getProduct(id);
   }
 
-  async decreaseInventory(id: number, amount: number): Promise<Product | null> {
+  async decreaseInventory(id: string, amount: number): Promise<Product | null> {
     await this.client.execute({
       sql: `UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?`,
       args: [amount, id, amount],
@@ -103,23 +104,20 @@ export class TursoAdapter implements DBAdapter {
   async createOrder(orderData: Omit<Order, 'id'>): Promise<Order> {
     const now = new Date().toISOString();
     const json = JSON.stringify(orderData.items);
+    const orderId = `order-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    const res = await this.client.execute({
-      sql: `INSERT INTO orders (user_id, items_json, created_at) VALUES (?, ?, ?) RETURNING id`,
-      args: [orderData.userId, json, now],
+    await this.client.execute({
+      sql: `INSERT INTO orders (id, user_id, items_json, created_at) VALUES (?, ?, ?, ?)`,
+      args: [orderId, orderData.userId, json, now],
     });
 
-    const id = Number(res.rows[0].id);
-
     return {
-      id,
-      userId: String(orderData.userId),
-      items: orderData.items,
-      total: orderData.total
+      id: orderId,
+      ...orderData
     };
   }
 
-  async getOrderById(id: number): Promise<Order | null> {
+  async getOrderById(id: string): Promise<Order | null> {
     const res = await this.client.execute({
       sql: `SELECT id, user_id as userId, items_json as items, created_at FROM orders WHERE id = ? LIMIT 1`,
       args: [id],
@@ -129,22 +127,46 @@ export class TursoAdapter implements DBAdapter {
     if (!row) return null;
 
     return {
-      id: Number(row.id),
+      id: String(row.id),
+      orderNumber: `#${row.id}`,
       userId: String(row.userId),
-      items: JSON.parse(String(row.items))
+      items: JSON.parse(String(row.items)),
+      subtotal: 0,
+      tax: 0,
+      shippingCost: 0,
+      total: 0,
+      currency: 'USD',
+      paymentStatus: PaymentStatus.PENDING,
+      fulfillmentStatus: FulfillmentStatus.UNFULFILLED,
+      status: OrderStatus.PENDING,
+      customerEmail: 'test@example.com',
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
   }
 
-  async listOrdersForUser(userId: number): Promise<Order[]> {
+  async listOrdersForUser(userId: string): Promise<Order[]> {
     const res = await this.client.execute({
       sql: `SELECT id, user_id as userId, items_json as items, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC`,
       args: [userId],
     });
 
     return (res.rows || []).map(r => ({
-      id: Number(r.id),
+      id: String(r.id),
+      orderNumber: `#${r.id}`,
       userId: String(r.userId),
-      items: JSON.parse(String(r.items))
+      items: JSON.parse(String(r.items)),
+      subtotal: 0,
+      tax: 0,
+      shippingCost: 0,
+      total: 0,
+      currency: 'USD',
+      paymentStatus: PaymentStatus.PENDING,
+      fulfillmentStatus: FulfillmentStatus.UNFULFILLED,
+      status: OrderStatus.PENDING,
+      customerEmail: 'test@example.com',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }));
   }
 }

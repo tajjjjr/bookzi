@@ -18,7 +18,7 @@ export class ProductController {
 
   async getOne(req: Request, res: Response): Promise<void> {
     try {
-      const data = await this.productService.getProduct(Number(req.params.id));
+      const data = await this.productService.getProduct(req.params.id);
       res.json(data);
     } catch (err) {
       if (err instanceof Error && err.message === "PRODUCT_NOT_FOUND") {

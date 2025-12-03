@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 import { DBAdapter } from "../interfaces/DBAdapter.ts";
-import { Product, Order } from "../../types/models.ts"
+import { Product, Order, PaymentStatus, FulfillmentStatus, OrderStatus } from "../../types/models.ts"
 
 interface SQLiteAdapterConfig {
   filepath: string;
@@ -28,8 +28,8 @@ export class SQLiteAdapter implements DBAdapter {
       );
 
       CREATE TABLE IF NOT EXISTS orders (
-        id INTEGER PRIMARY KEY,
-        user_id INTEGER NOT NULL,
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
         items_json TEXT NOT NULL,
         created_at TEXT NOT NULL
       );
@@ -103,6 +103,41 @@ export class SQLiteAdapter implements DBAdapter {
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS orders_new (
+        id TEXT PRIMARY KEY,
+        orderNumber TEXT UNIQUE NOT NULL,
+        userId TEXT NOT NULL,
+        items TEXT NOT NULL,
+        subtotal REAL NOT NULL,
+        discount REAL,
+        discountCode TEXT,
+        tax REAL NOT NULL,
+        shippingCost REAL NOT NULL,
+        total REAL NOT NULL,
+        currency TEXT NOT NULL,
+        paymentStatus TEXT NOT NULL,
+        paymentMethod TEXT,
+        paymentIntentId TEXT,
+        fulfillmentStatus TEXT NOT NULL,
+        shippingAddress TEXT,
+        billingAddress TEXT,
+        shippingMethod TEXT,
+        trackingNumber TEXT,
+        trackingUrl TEXT,
+        customerEmail TEXT NOT NULL,
+        customerPhone TEXT,
+        notes TEXT,
+        internalNotes TEXT,
+        status TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        paidAt TEXT,
+        shippedAt TEXT,
+        deliveredAt TEXT,
+        cancelledAt TEXT,
+        refundedAt TEXT
+      );
     `);
   }
   async listProducts(): Promise<Product[]> {
@@ -113,16 +148,16 @@ export class SQLiteAdapter implements DBAdapter {
     return this.listProducts();
   }
 
-  async getProduct(id: number): Promise<Product | null> {
+  async getProduct(id: string): Promise<Product | null> {
     const result = this.db.prepare("SELECT * FROM products WHERE id = ?").get(id) as Product | undefined;
     return result || null;
   }
 
-  async getProductById(id: number): Promise<Product | null> {
+  async getProductById(id: string): Promise<Product | null> {
     return this.getProduct(id);
   }
 
-  async decreaseInventory(id: number, amount: number): Promise<Product | null> {
+  async decreaseInventory(id: string, amount: number): Promise<Product | null> {
     const stmt = this.db.prepare(`
       UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?
     `);
@@ -137,47 +172,70 @@ export class SQLiteAdapter implements DBAdapter {
   async createOrder(orderData: Omit<Order, 'id'>): Promise<Order> {
     const json = JSON.stringify(orderData.items);
     const now = new Date().toISOString();
+    const orderId = `order-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    const info = this.db.prepare(`
-      INSERT INTO orders (user_id, items_json, created_at)
-      VALUES (?, ?, ?)
-    `).run(orderData.userId, json, now);
+    this.db.prepare(`
+      INSERT INTO orders (id, user_id, items_json, created_at)
+      VALUES (?, ?, ?, ?)
+    `).run(orderId, orderData.userId, json, now);
 
     return {
-      id: Number(info.lastInsertRowid),
-      userId: String(orderData.userId),
-      items: orderData.items,
-      total: orderData.total
+      id: orderId,
+      ...orderData
     };
   }
 
-  async getOrderById(id: number): Promise<Order | null> {
+  async getOrderById(id: string): Promise<Order | null> {
     const result = this.db.prepare(`
       SELECT id, user_id as userId, items_json as items, created_at
       FROM orders
       WHERE id = ?
-    `).get(id) as { id: number; userId: number; items: string } | undefined;
+    `).get(id) as { id: string; userId: string; items: string } | undefined;
 
     if (!result) return null;
 
     return {
       id: result.id,
-      userId: String(result.userId),
-      items: JSON.parse(result.items)
+      orderNumber: `#${result.id}`,
+      userId: result.userId,
+      items: JSON.parse(result.items),
+      subtotal: 0,
+      tax: 0,
+      shippingCost: 0,
+      total: 0,
+      currency: 'USD',
+      paymentStatus: PaymentStatus.PENDING,
+      fulfillmentStatus: FulfillmentStatus.UNFULFILLED,
+      status: OrderStatus.PENDING,
+      customerEmail: 'test@example.com',
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
   }
 
-  async listOrdersForUser(userId: number): Promise<Order[]> {
+  async listOrdersForUser(userId: string): Promise<Order[]> {
     const results = this.db.prepare(`
       SELECT id, user_id as userId, items_json as items, created_at
       FROM orders
       WHERE user_id = ?
-    `).all(userId) as { id: number; userId: number; items: string }[];
+    `).all(userId) as { id: string; userId: string; items: string }[];
 
     return results.map(o => ({
       id: o.id,
-      userId: String(o.userId),
-      items: JSON.parse(o.items)
+      orderNumber: `#${o.id}`,
+      userId: o.userId,
+      items: JSON.parse(o.items),
+      subtotal: 0,
+      tax: 0,
+      shippingCost: 0,
+      total: 0,
+      currency: 'USD',
+      paymentStatus: PaymentStatus.PENDING,
+      fulfillmentStatus: FulfillmentStatus.UNFULFILLED,
+      status: OrderStatus.PENDING,
+      customerEmail: 'test@example.com',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }));
   }
 }

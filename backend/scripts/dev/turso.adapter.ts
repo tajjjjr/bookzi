@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import { createRouter } from "../../src/http/routes/routes.ts";
 import { TursoAdapter } from "../../src/adapters/turso/turso.adapter.ts";
+import { SQLiteAdapter } from "../../src/adapters/sqlite/sqlite.adapter.ts";
 import mockAuth from "../../src/adapters/mock/auth.mock.ts";
 import mockProduct from "../../src/adapters/mock/product.mock.ts";
 import mockAttachment from "../../src/adapters/mock/attachment.mock.ts";
@@ -23,7 +24,7 @@ app.use(json());
 
 // Mount API routes with Turso DB and mock adapters
 app.use("/api", createRouter({ 
-  db, 
+  db: db as unknown as SQLiteAdapter, 
   authAdapter: mockAuth, 
   productAdapter: mockProduct, 
   attachmentAdapter: mockAttachment 

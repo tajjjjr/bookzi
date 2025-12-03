@@ -14,36 +14,36 @@ const products: Product[] = [
   }
 ];
 
-const orders: Order[] = [
-  { id: 1, userId: "1", items: [{ productId: 1, quantity: 2 }] },
-  { id: 2, userId: "1", items: [{ productId: 2, quantity: 1 }] }
-];
+const orders: Order[] = [];
 
 const mockDbAdapter: DBAdapter = {
   listProducts: async (): Promise<Product[]> => products,
   
   getProducts: async (): Promise<Product[]> => products,
   
-  getProduct: async (id: number): Promise<Product | null> => 
-    products.find(p => p.id === String(id)) || null,
+  getProduct: async (id: string): Promise<Product | null> => 
+    products.find(p => p.id === id) || null,
     
-  getProductById: async (id: number): Promise<Product | null> => 
-    products.find(p => p.id === String(id)) || null,
+  getProductById: async (id: string): Promise<Product | null> => 
+    products.find(p => p.id === id) || null,
   
   createOrder: async (orderData: Omit<Order, 'id'>): Promise<Order> => {
-    const newOrder: Order = { id: orders.length + 1, ...orderData };
+    const newOrder: Order = { 
+      id: `order-${Date.now()}`,
+      ...orderData
+    };
     orders.push(newOrder);
     return newOrder;
   },
   
-  getOrderById: async (id: number): Promise<Order | null> =>
+  getOrderById: async (id: string): Promise<Order | null> =>
     orders.find(o => o.id === id) || null,
   
-  listOrdersForUser: async (userId: number): Promise<Order[]> => 
-    orders.filter(o => o.userId === String(userId)),
+  listOrdersForUser: async (userId: string): Promise<Order[]> => 
+    orders.filter(o => o.userId === userId),
   
-  decreaseInventory: async (id: number, amount: number): Promise<Product | null> => {
-    const product = products.find(p => p.id === String(id));
+  decreaseInventory: async (id: string, amount: number): Promise<Product | null> => {
+    const product = products.find(p => p.id === id);
     if (product) product.stock -= amount;
     return product || null;
   }

@@ -1,9 +1,10 @@
 import { DBAdapter, Order, OrderItem } from "../../adapters/interfaces/DBAdapter.ts";
+import { PaymentStatus, FulfillmentStatus, OrderStatus } from "../../types/models.ts";
 
 export class OrderService {
   constructor(private db: DBAdapter) {}
 
-  async createOrder({ userId, items }: { userId: number; items: OrderItem[] }): Promise<Order> {
+  async createOrder({ userId, items }: { userId: string; items: OrderItem[] }): Promise<Order> {
     if (!userId) {
       throw new Error("MISSING_USER");
     }
@@ -33,15 +34,26 @@ export class OrderService {
     }
 
     const order = await this.db.createOrder({
-      userId: String(userId),
+      orderNumber: `#${Date.now()}`,
+      userId,
       items,
-      total
+      subtotal: total,
+      tax: 0,
+      shippingCost: 0,
+      total,
+      currency: 'USD',
+      paymentStatus: PaymentStatus.PENDING,
+      fulfillmentStatus: FulfillmentStatus.UNFULFILLED,
+      status: OrderStatus.PENDING,
+      customerEmail: 'test@example.com',
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     return order;
   }
 
-  async listOrdersForUser(userId: number): Promise<Order[]> {
+  async listOrdersForUser(userId: string): Promise<Order[]> {
     if (!userId) {
       throw new Error("MISSING_USER");
     }
