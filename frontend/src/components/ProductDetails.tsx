@@ -14,9 +14,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
             {/* Header Section */}
             <div className="space-y-4">
                 <div className="flex items-center space-x-4">
-                    <span className="bg-[#CFFF24] text-black text-xs font-bold px-3 py-1 uppercase tracking-widest">
-                        {product.category}
-                    </span>
+                    <div className="inline-flex items-center space-x-2 border border-[#CFFF24]/30 rounded-full px-3 py-1 w-fit">
+                        <div className="w-1.5 h-1.5 bg-[#CFFF24] rounded-full animate-pulse"></div>
+                        <span className="text-[#CFFF24] text-[10px] uppercase tracking-widest font-bold">{product.category}</span>
+                    </div>
                     <div className="flex items-center space-x-1 text-[#CFFF24] text-sm">
                         <Star size={14} fill="#CFFF24" />
                         <span>{product.rating}</span>
@@ -73,7 +74,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
                     </div>
 
                     {/* Add to Cart Button */}
-                    <button className="flex-1 h-14 bg-[#CFFF24] text-black font-bold uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2 group">
+                    <button className="w-full h-14 bg-[#CFFF24] text-black font-bold uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2 group">
                         <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
                         Add to Cart
                     </button>
