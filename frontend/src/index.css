@@ -13,6 +13,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Colors */
+  --background: #050505;
+  --accent: #cfff24;
+  --accent-hover: #B8E620;
 }
 
 /* Custom Scrollbar */
