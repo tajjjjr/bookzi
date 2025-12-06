@@ -5,6 +5,7 @@ import ProductPage from './components/ProductPage';
 import CartPage from './components/CartPage';
 import AccountPage from './components/AccountPage';
 import CreateReviewPage from './components/CreateReviewPage';
+import Checkout from './components/Checkout';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "account/review/:productId",
         element: <CreateReviewPage />
+      },
+      {
+        path: "/shop/checkout",
+        element: <Checkout />
       }
     ],
   },
