@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Product } from '../types/landing_page_types';
 import { Star, ArrowUpRight } from 'lucide-react';
 
@@ -7,8 +8,17 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/shop/${product.id}`);
+  };
+
   return (
-    <div className="group relative w-full perspective-1000">
+    <div
+      onClick={handleClick}
+      className="group relative w-full perspective-1000 cursor-pointer"
+    >
       {/* 
         Container for the twist effect.
         hover:-translate-y-4 -> Lifts up
@@ -33,15 +43,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         group-hover:shadow-[#CFFF24]/5
         rounded-none
       ">
-        
+
         {/* Image Area */}
         <div className="relative w-full aspect-[4/5] overflow-hidden border-b border-white/5 bg-[#1a1a1a]">
-          <img 
-            src={product.image} 
-            alt={product.title} 
+          <img
+            src={product.image}
+            alt={product.title}
             className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110 opacity-80 group-hover:opacity-100 grayscale group-hover:grayscale-0"
           />
-          
+
           {/* Badge */}
           <div className="absolute top-4 left-4 bg-[#050505] text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest border border-white/10">
             {product.category}
@@ -49,27 +59,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* Quick Action Overlay (Only visible on hover) */}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-             <button className="bg-[#CFFF24] text-black px-6 py-3 text-xs font-bold uppercase tracking-widest translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                Quick View
-             </button>
+            <button className="bg-[#CFFF24] text-black px-6 py-3 text-xs font-bold uppercase tracking-widest translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+              Quick View
+            </button>
           </div>
         </div>
 
         {/* Content Area */}
         <div className="p-6">
           <div className="flex justify-between items-start mb-2">
-             <div className="flex items-center space-x-1 text-[#CFFF24] text-xs">
-                <Star size={12} fill="#CFFF24" />
-                <span>{product.rating}</span>
-                <span className="text-gray-600">({product.reviews})</span>
-             </div>
-             <span className="text-white font-mono text-sm">${product.price}</span>
+            <div className="flex items-center space-x-1 text-[#CFFF24] text-xs">
+              <Star size={12} fill="#CFFF24" />
+              <span>{product.rating}</span>
+              <span className="text-gray-600">({product.reviews})</span>
+            </div>
+            <span className="text-white font-mono text-sm">${product.price}</span>
           </div>
 
           <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-[#CFFF24] transition-colors">
             {product.title}
           </h3>
-          
+
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-4">
             By {product.author}
           </p>
@@ -87,7 +97,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
       </div>
-      
+
       {/* Decorative shadow element that stays on ground to emphasize lift */}
       <div className="absolute inset-0 bg-[#CFFF24]/0 group-hover:bg-[#CFFF24]/5 blur-xl -z-10 transition-all duration-500 opacity-0 group-hover:opacity-100 translate-y-4 scale-95" />
     </div>

@@ -1,4 +1,21 @@
-import type { Product, HeroSlide } from '../types/landing_page_types';
+import type { Product, HeroSlide, PendingReview } from '../types/landing_page_types';
+
+export const PENDING_REVIEWS: PendingReview[] = [
+  {
+    id: 'pr1',
+    productId: 'p3',
+    productTitle: 'Event-Driven Architectures',
+    productImage: 'https://picsum.photos/id/48/600/800',
+    purchaseDate: '2023-11-20',
+  },
+  {
+    id: 'pr2',
+    productId: 'p8',
+    productTitle: 'Low Latency Networking',
+    productImage: 'https://picsum.photos/id/180/600/800',
+    purchaseDate: '2023-11-18',
+  },
+];
 
 export const HERO_SLIDES: HeroSlide[] = [
   {
@@ -35,6 +52,56 @@ export const ALL_PRODUCTS: Product[] = [
     rating: 4.9,
     reviews: 128,
     image: 'https://picsum.photos/id/20/600/800',
+    reviewsList: [
+      {
+        id: 'r1',
+        author: 'Sarah Chen',
+        rating: 5,
+        date: '2023-11-15',
+        content: 'Absolutely game-changing. The architectural breakdown helped us reduce our latency by 40%.',
+        avatar: 'https://i.pravatar.cc/150?u=1',
+      },
+      {
+        id: 'r2',
+        author: 'Michael Ross',
+        rating: 5,
+        date: '2023-11-10',
+        content: 'The depth of detail on the matching engine logic is unmatched. Worth every penny.',
+        avatar: 'https://i.pravatar.cc/150?u=2',
+      },
+      {
+        id: 'r3',
+        author: 'David Kim',
+        rating: 4,
+        date: '2023-10-28',
+        content: 'Great content, though I wish there were more examples in C++. Still a solid 5/5 for the concepts.',
+        avatar: 'https://i.pravatar.cc/150?u=3',
+      },
+      {
+        id: 'r4',
+        author: 'Emily White',
+        rating: 5,
+        date: '2023-10-15',
+        content: 'Finally a resource that actually explains the "how" and not just the "what".',
+        avatar: 'https://i.pravatar.cc/150?u=4',
+      },
+      {
+        id: 'r5',
+        author: 'James Wilson',
+        rating: 5,
+        date: '2023-10-02',
+        content: 'Our team uses this as a reference for our internal training. Highly recommended.',
+        avatar: 'https://i.pravatar.cc/150?u=5',
+      },
+      {
+        id: 'r6',
+        author: 'Linda Xu',
+        rating: 4,
+        date: '2023-09-20',
+        content: 'Very technical, exactly what I was looking for.',
+        avatar: 'https://i.pravatar.cc/150?u=6',
+      },
+    ],
   },
   {
     id: 'p2',
@@ -69,7 +136,7 @@ export const ALL_PRODUCTS: Product[] = [
     reviews: 156,
     image: 'https://picsum.photos/id/60/600/800',
   },
-   {
+  {
     id: 'p5',
     title: 'Algorithmic Market Making',
     author: 'Quant Team',
