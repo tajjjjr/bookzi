@@ -27,3 +27,11 @@ export interface HeroSlide {
   image: string;
   ctaText: string;
 }
+
+export interface PendingReview {
+  id: string;
+  productId: string;
+  productTitle: string;
+  productImage: string;
+  purchaseDate: string;
+}
