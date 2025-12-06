@@ -8,40 +8,43 @@ import ProductGrid from "./ProductGrid";
 import { updateMeta } from "../lib/set_metadata";
 
 const INITIAL_CART: CartItem[] = [
-    {
-      id: '1',
-      title: 'Nexus Custody Vault',
-      type: 'COURSE',
-      author: 'Security Team',
-      price: 129.00,
-      quantity: 1,
-      image: 'https://picsum.photos/400/400?grayscale&random=1'
-    },
-    {
-      id: '2',
-      title: 'Global Liquidity Engine',
-      type: 'CASE STUDY',
-      author: 'Tajjjr Engineering',
-      price: 49.00,
-      quantity: 1,
-      image: 'https://picsum.photos/400/400?grayscale&random=2'
-    },
-    {
-      id: '3',
-      title: 'Zero-Knowledge Proofs',
-      type: 'GUIDE',
-      author: 'Cryptography Unit',
-      price: 59.00,
-      quantity: 2,
-      image: 'https://picsum.photos/400/400?grayscale&random=3'
-    }
+  {
+    id: "1",
+    title: "Nexus Custody Vault",
+    type: "COURSE",
+    author: "Security Team",
+    price: 129.0,
+    quantity: 1,
+    image: "https://picsum.photos/400/400?grayscale&random=1",
+  },
+  {
+    id: "2",
+    title: "Global Liquidity Engine",
+    type: "CASE STUDY",
+    author: "Tajjjr Engineering",
+    price: 49.0,
+    quantity: 1,
+    image: "https://picsum.photos/400/400?grayscale&random=2",
+  },
+  {
+    id: "3",
+    title: "Zero-Knowledge Proofs",
+    type: "GUIDE",
+    author: "Cryptography Unit",
+    price: 59.0,
+    quantity: 2,
+    image: "https://picsum.photos/400/400?grayscale&random=3",
+  },
 ];
 
 const CartPage: React.FC = () => {
-      useEffect(() => {
+  useEffect(() => {
     document.title = "Cart";
 
-    updateMeta("description", "Review your selected TAJJJR ebooks—expert-crafted courses, guides, and case studies for developers. Secure your cart and continue learning with premium, real-world tech insights.");
+    updateMeta(
+      "description",
+      "Review your selected TAJJJR ebooks—expert-crafted courses, guides, and case studies for developers. Secure your cart and continue learning with premium, real-world tech insights."
+    );
     updateMeta("og:title", "TAJJJR eBooks - Your Cart");
   }, []);
   const [cartItems, setCartItems] = useState<CartItem[]>(INITIAL_CART);
@@ -130,6 +133,9 @@ const CartPage: React.FC = () => {
               variant="primary"
               label="Continue Shopping"
               className="mx-auto block"
+              onClick={() => {
+                window.location.href = "/shop";
+              }}
             />
           </div>
         )}
