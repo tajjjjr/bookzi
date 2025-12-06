@@ -1,4 +1,21 @@
-import type { Product, HeroSlide } from '../types/landing_page_types';
+import type { Product, HeroSlide, PendingReview } from '../types/landing_page_types';
+
+export const PENDING_REVIEWS: PendingReview[] = [
+  {
+    id: 'pr1',
+    productId: 'p3',
+    productTitle: 'Event-Driven Architectures',
+    productImage: 'https://picsum.photos/id/48/600/800',
+    purchaseDate: '2023-11-20',
+  },
+  {
+    id: 'pr2',
+    productId: 'p8',
+    productTitle: 'Low Latency Networking',
+    productImage: 'https://picsum.photos/id/180/600/800',
+    purchaseDate: '2023-11-18',
+  },
+];
 
 export const HERO_SLIDES: HeroSlide[] = [
   {
