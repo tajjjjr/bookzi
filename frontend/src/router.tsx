@@ -3,8 +3,6 @@ import App from './App';
 import LandingPage from './components/LandingPage';
 import ProductPage from './components/ProductPage';
 import CartPage from './components/CartPage';
-import AccountPage from './components/AccountPage';
-import CreateReviewPage from './components/CreateReviewPage';
 
 const router = createBrowserRouter([
   {
@@ -22,14 +20,6 @@ const router = createBrowserRouter([
       {    
         path: '/shop/cart',
         element: <CartPage />,
-      },
-      {
-        path: "account",
-        element: <AccountPage />
-      },
-      {
-        path: "account/review/:productId",
-        element: <CreateReviewPage />
       }
     ],
   },
