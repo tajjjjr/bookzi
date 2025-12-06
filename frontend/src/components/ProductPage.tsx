@@ -4,9 +4,12 @@ import { ArrowLeft } from 'lucide-react';
 import { ALL_PRODUCTS } from '../constants/landing_page_constants';
 import ProductGallery from './ProductGallery';
 import ProductDetails from './ProductDetails';
+import ReviewSnippet from './ReviewSnippet';
+import ReviewList from './ReviewList';
 
 const ProductPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const [showAllReviews, setShowAllReviews] = React.useState(false);
     const product = ALL_PRODUCTS.find((p) => p.id === id);
 
     useEffect(() => {
@@ -53,6 +56,26 @@ const ProductPage: React.FC = () => {
                     </div>
 
                 </div>
+
+                {/* Reviews Section */}
+                {product.reviewsList && product.reviewsList.length > 0 && (
+                    <div className="mt-20 border-t border-white/10 pt-12">
+                        <div className="max-w-3xl mx-auto">
+                            <ReviewSnippet
+                                reviews={product.reviewsList}
+                                onSeeAll={() => setShowAllReviews(true)}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* All Reviews Modal */}
+                {showAllReviews && product.reviewsList && (
+                    <ReviewList
+                        reviews={product.reviewsList}
+                        onClose={() => setShowAllReviews(false)}
+                    />
+                )}
             </div>
         </div>
     );
