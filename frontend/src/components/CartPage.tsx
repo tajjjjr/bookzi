@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CartItemRow from "./CartItemRow";
 import OrderSummary from "./OrderSummary";
 import type { CartItem } from "../types/cart_page_types";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "./Button";
 import ProductGrid from "./ProductGrid";
+import { updateMeta } from "../lib/set_metadata";
 
 const INITIAL_CART: CartItem[] = [
     {
@@ -37,6 +38,12 @@ const INITIAL_CART: CartItem[] = [
 ];
 
 const CartPage: React.FC = () => {
+      useEffect(() => {
+    document.title = "Shop — My Cart";
+
+    updateMeta("description", "Review your selected TAJJJR ebooks—expert-crafted courses, guides, and case studies for developers. Secure your cart and continue learning with premium, real-world tech insights.");
+    updateMeta("og:title", "TAJJJR eBooks - Your Cart");
+  }, []);
   const [cartItems, setCartItems] = useState<CartItem[]>(INITIAL_CART);
 
   const updateQuantity = (id: string, newQuantity: number) => {
