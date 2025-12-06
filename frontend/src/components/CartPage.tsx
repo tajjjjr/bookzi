@@ -39,7 +39,7 @@ const INITIAL_CART: CartItem[] = [
 
 const CartPage: React.FC = () => {
       useEffect(() => {
-    document.title = "Shop — My Cart";
+    document.title = "Cart";
 
     updateMeta("description", "Review your selected TAJJJR ebooks—expert-crafted courses, guides, and case studies for developers. Secure your cart and continue learning with premium, real-world tech insights.");
     updateMeta("og:title", "TAJJJR eBooks - Your Cart");
