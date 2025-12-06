@@ -60,7 +60,7 @@ const ProductPage: React.FC = () => {
                 {/* Reviews Section */}
                 {product.reviewsList && product.reviewsList.length > 0 && (
                     <div className="mt-20 border-t border-white/10 pt-12">
-                        <div className="max-w-3xl mx-auto">
+                        <div className="w-full">
                             <ReviewSnippet
                                 reviews={product.reviewsList}
                                 onSeeAll={() => setShowAllReviews(true)}
