@@ -17,10 +17,19 @@ import PaymentSettingsPage from './components/PaymentSettingsPage';
 import AddressBookPage from './components/AddressBookPage';
 import NewsletterPreferencesPage from './components/NewsletterPreferencesPage';
 import CloseAccountPage from './components/CloseAccountPage';
+import { createBrowserRouter } from "react-router-dom";
+import App from "./App";
+import LandingPage from "./components/LandingPage";
+import ProductPage from "./components/ProductPage";
+import CartPage from "./components/CartPage";
+import AccountPage from "./components/AccountPage";
+import CreateReviewPage from "./components/CreateReviewPage";
+import Checkout from "./components/Checkout";
+import ThankYouPage from "./components/ThankYouPage";
 
 const router = createBrowserRouter([
   {
-    path: '/shop',
+    path: "/shop",
     element: <App />,
     children: [
       {
@@ -29,10 +38,10 @@ const router = createBrowserRouter([
       },
       {
         path: ":id",
-        element: <ProductPage />
+        element: <ProductPage />,
       },
       {
-        path: '/shop/cart',
+        path: "/shop/cart",
         element: <CartPage />,
       },
       {
@@ -55,11 +64,20 @@ const router = createBrowserRouter([
             element: <CreateReviewPage />
           },
         ]
+        element: <AccountPage />,
+      },
+      {
+        path: "account/review/:productId",
+        element: <CreateReviewPage />,
       },
       {
         path: "/shop/checkout",
-        element: <Checkout />
-      }
+        element: <Checkout />,
+      },
+      {
+        path: "/shop/thank-you",
+        element: <ThankYouPage />,
+      },
     ],
   },
 ]);

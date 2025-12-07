@@ -97,3 +97,44 @@ button:focus-visible {
     background-color: #cfff24;
   } */
 }
+
+@keyframes drawCircle {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes drawCheck {
+  from {
+    stroke-dashoffset: 40;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-draw-circle {
+  animation: drawCircle 0.8s ease-out forwards;
+}
+
+.animate-draw-check {
+  animation: drawCheck 0.5s ease-out 0.8s forwards;
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.8s ease-out forwards;
+}
