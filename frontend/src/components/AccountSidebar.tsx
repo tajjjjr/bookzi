@@ -24,7 +24,7 @@ const AccountSidebar: React.FC = () => {
 
     const menuItems = [
         {
-            title: 'My Jumia Account',
+            title: 'My TAJJJ Account',
             items: [
                 { label: 'Overview', icon: User, path: '/shop/account' },
                 { label: 'Orders', icon: Package, path: '/shop/account/orders' },
@@ -54,7 +54,6 @@ const AccountSidebar: React.FC = () => {
                     <div key={index} className={index !== 0 ? 'border-t border-white/10' : ''}>
                         <div className="px-5 py-4 bg-white/[0.02] border-b border-white/5">
                             <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#CFFF24] flex items-center gap-2">
-                                {index === 0 ? <User size={14} /> : null}
                                 {section.title}
                             </h3>
                         </div>
