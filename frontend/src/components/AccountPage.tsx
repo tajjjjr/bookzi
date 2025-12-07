@@ -44,7 +44,7 @@ const AccountPage: React.FC = () => {
                             </div>
                             <Link
                                 to={`/shop/account/review/${review.productId}`}
-                                className="px-6 py-3 bg-[#CFFF24] text-black font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black"
+                                className="px-6 py-3 bg-[#CFFF24] text-black font-bold uppercase tracking-widest text-sm hover:bg-white hover:!text-black transition-colors"
                             >
                                 Write Review
                             </Link>
