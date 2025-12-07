@@ -7,6 +7,7 @@ import AccountPage from "./components/AccountPage";
 import CreateReviewPage from "./components/CreateReviewPage";
 import Checkout from "./components/Checkout";
 import ThankYouPage from "./components/ThankYouPage";
+import AuthPage from "./components/AuthPage";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
         path: "/shop/thank-you",
         element: <ThankYouPage />,
       },
+      {
+        path: "/shop/auth",
+        element: <AuthPage />,
+      }
     ],
   },
 ]);
