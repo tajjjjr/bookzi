@@ -5,7 +5,7 @@ import ProductGrid from './ProductGrid';
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#CFFF24] selection:text-black">
+    <div className="min-h-screen bg-[var(--background)] text-white selection:bg-[var(--accent)] selection:text-black">
       <main className="flex flex-col">
         <Hero />
         <MostPopular />
