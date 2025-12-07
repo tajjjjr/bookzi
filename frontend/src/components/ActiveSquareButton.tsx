@@ -38,10 +38,10 @@ export const ActiveSquareButton: React.FC<ShinyButtonProps> = ({
     "up-left": ArrowUpLeft,
     "down-right": ArrowDownRight,
     "down-left": ArrowDownLeft,
-    up: ArrowUp,
-    down: ArrowDown,
-    left: ArrowLeft,
-    right: ArrowRight,
+    "up": ArrowUp,
+    "down": ArrowDown,
+    "left": ArrowLeft,
+    "right": ArrowRight,
   }[direction];
 
   return (
