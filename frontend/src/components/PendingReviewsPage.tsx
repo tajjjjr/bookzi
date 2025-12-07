@@ -11,7 +11,7 @@ const PendingReviewsPage: React.FC = () => {
 
             <div className="space-y-4">
                 {PENDING_REVIEWS.map((review) => (
-                    <div key={review.id} className="bg-[#0f0f0f] p-6 border border-white/10 flex flex-col sm:flex-row items-center gap-6 group hover:border-[#CFFF24]/50 transition-colors rounded-none">
+                    <div key={review.id} className="bg-[#0f0f0f] p-6 border border-white/10 flex flex-col sm:flex-row items-center gap-6 group transition-colors rounded-none">
                         <img
                             src={review.productImage}
                             alt={review.productTitle}

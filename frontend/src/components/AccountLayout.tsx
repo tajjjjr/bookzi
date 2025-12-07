@@ -14,7 +14,7 @@ const AccountLayout: React.FC = () => {
                         <User size={40} />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold">Welcome back, Engineer</h1>
+                        <h1 className="text-3xl font-bold"><span className="text-[#CFFF24]">Welcome back,</span> Engineer</h1>
                         <p className="text-gray-400">Manage your orders and reviews</p>
                     </div>
                 </div>

@@ -22,9 +22,11 @@ const PaymentSettingsPage: React.FC = () => {
                         <Trash2 size={18} />
                     </button>
                 </div>
-                <button className="w-full py-3 border border-[#CFFF24] text-[#CFFF24] font-bold uppercase tracking-widest text-sm hover:bg-[#CFFF24] hover:text-black transition-colors">
-                    Add New Card
-                </button>
+                <div className="mt-6">
+                    <button className="px-6 py-3 bg-[#CFFF24] text-black font-bold uppercase tracking-widest text-sm hover:bg-white hover:!text-black transition-colors">
+                        Add New Card
+                    </button>
+                </div>
             </div>
         </div>
     );
