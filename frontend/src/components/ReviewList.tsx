@@ -66,25 +66,34 @@ const ReviewList: React.FC<ReviewListProps> = ({ reviews, onClose }) => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="p-4 border-t border-white/10 flex items-center justify-between bg-[#0f0f0f]">
+                    <div className="p-4 border-t border-white/10 flex justify-center items-center space-x-2 bg-[#0f0f0f]">
                         <button
                             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
-                            className="p-2 text-white disabled:text-gray-600 hover:text-[#CFFF24] transition-colors disabled:cursor-not-allowed"
+                            className="w-10 h-10 border border-white/10 flex items-center justify-center text-white hover:border-[#CFFF24] hover:text-[#CFFF24] disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-white transition-colors"
                         >
-                            <ChevronLeft size={20} />
+                            <ChevronLeft size={16} />
                         </button>
 
-                        <span className="text-sm text-gray-400">
-                            Page <span className="text-white font-bold">{currentPage}</span> of {totalPages}
-                        </span>
+                        {Array.from({ length: totalPages }).map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setCurrentPage(i + 1)}
+                                className={`w-10 h-10 border flex items-center justify-center text-sm font-bold transition-colors ${currentPage === i + 1
+                                        ? 'bg-[#CFFF24] border-[#CFFF24] text-black'
+                                        : 'border-white/10 text-white hover:border-[#CFFF24] hover:text-[#CFFF24]'
+                                    }`}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
 
                         <button
                             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages}
-                            className="p-2 text-white disabled:text-gray-600 hover:text-[#CFFF24] transition-colors disabled:cursor-not-allowed"
+                            className="w-10 h-10 border border-white/10 flex items-center justify-center text-white hover:border-[#CFFF24] hover:text-[#CFFF24] disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-white transition-colors"
                         >
-                            <ChevronRight size={20} />
+                            <ChevronRight size={16} />
                         </button>
                     </div>
                 )}

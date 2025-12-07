@@ -225,3 +225,5 @@ export const ALL_PRODUCTS: Product[] = [
     image: 'https://picsum.photos/id/400/600/800',
   },
 ];
+
+export const POPULAR_PRODUCTS = ALL_PRODUCTS.slice(0, 4);
