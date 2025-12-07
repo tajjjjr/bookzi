@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { ALL_PRODUCTS } from "../constants/landing_page_constants";
+import { Loader2 } from "lucide-react";
 import ProductCard from "./ProductCard";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { useProducts } from "../hooks/products/use_product";
 
 const ProductGrid: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"All" | "Recommended" | "Search">(
@@ -9,18 +10,37 @@ const ProductGrid: React.FC = () => {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const { products, loading, error } = useProducts();
+
+  // Handle loading state with elegant animation
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="w-10 h-10 animate-spin text-[var(--accent)]" />
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-red-400">
+        Something went wrong. Please try again.
+      </div>
+    );
+  }
 
   // Simulate filtering based on tabs
   const getFilteredProducts = () => {
     if (activeTab === "Recommended") {
       // Just return a subset for demo
-      return ALL_PRODUCTS.filter((_, idx) => idx % 2 === 0);
+      return products.filter((_, idx) => idx % 2 === 0);
     }
     if (activeTab === "Search") {
       // Simulate a search result
-      return ALL_PRODUCTS.filter((p) => p.category === "Case Study");
+      return products.filter((p) => p.category === "Case Study");
     }
-    return ALL_PRODUCTS;
+    return products;
   };
 
   const filteredProducts = getFilteredProducts();
