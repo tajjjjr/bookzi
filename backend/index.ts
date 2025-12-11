@@ -1,26 +1,29 @@
 import express from "express";
-import bodyParser from "body-parser";
 import { createRouter } from "./src/http/routes/routes.ts";
+import { createWebRouter } from "./src/http/routes/web.ts";
 import { AuthService } from "./src/services/auth.service.ts";
 
-const { json } = bodyParser;
 const app = express();
 
-// Initialize Auth service
+// Initialize services
 const authService = new AuthService(process.env.JWT_SECRET || "dev-secret");
 
 // Middleware
-app.use(json());
-app.use('/uploads', express.static('uploads')); // Serve uploaded files
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
-// Mount API routes
+// Web interface
+app.use("/", createWebRouter());
+
+// API routes
 app.use("/api", createRouter({ authService }));
 
-// Basic health check
+// Health check
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 // Start server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Backend Auth server running on http://localhost:${PORT}`);
+  console.log(`Bookzi API server running on http://localhost:${PORT}`);
+  console.log(`Admin interface: http://localhost:${PORT}`);
 });
