@@ -19,10 +19,7 @@ export function createProductRouter(): express.Router {
     const product = await productService.getProductById(req.params.id);
     product ? res.json(product) : res.status(404).json({ error: 'Product not found' });
   });
-  router.post("/", async (req, res) => {
-    const product = await productService.createProduct(req.body);
-    res.status(201).json(product);
-  });
+  router.post("/", controller.uploadImages, controller.createWithImages.bind(controller));
   router.put("/:id", async (req, res) => {
     const product = await productService.updateProduct(req.params.id, req.body);
     product ? res.json(product) : res.status(404).json({ error: 'Product not found' });
@@ -33,7 +30,6 @@ export function createProductRouter(): express.Router {
   });
 
   // Image management
-  router.post("/create-with-images", controller.uploadImages, controller.createWithImages.bind(controller));
   router.post("/:productId/images", upload.single('image'), controller.addImage.bind(controller));
   router.delete("/:productId/images/:attachmentId", controller.removeImage.bind(controller));
   router.put("/:productId/images/:attachmentId/default", controller.setDefaultImage.bind(controller));

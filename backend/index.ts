@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { createRouter } from "./src/http/routes/routes.js";
 import { AuthService } from "./src/services/auth.service.js";
@@ -10,6 +11,10 @@ const app = express();
 const authService = new AuthService(process.env.JWT_SECRET || "dev-secret");
 
 // Middleware
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 

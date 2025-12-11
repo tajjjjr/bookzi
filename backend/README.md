@@ -2,7 +2,7 @@
 
 Modern e-commerce API with authentication, product management, order processing, and file uploads. Built with TypeScript, Drizzle ORM, and a clean MVC architecture.
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -18,9 +18,9 @@ npm run migrate
 npm start
 ```
 
-**API Documentation (Swagger):** http://localhost:3000/api-docs
+**API Documentation:** http://localhost:3000/api-docs
 
-## 🏗️ Architecture
+## Architecture
 
 **Clean MVC + Repository Pattern:**
 - **Database Layer**: Drizzle ORM with SQLite (dev) / Turso (prod)
@@ -29,13 +29,14 @@ npm start
 - **Controller Layer**: HTTP request handling
 - **Route Layer**: API endpoint definitions
 
-## Features
+## Core Features
 
 - **Authentication**: JWT-based user registration and login
-- **Product Management**: Full CRUD with image uploads and inventory tracking
+- **Product Management**: Full CRUD with image uploads, categories, and reviews
 - **Order Management**: Secure order processing with user isolation
 - **File Uploads**: Image management with local storage
-- **Web Interface**: Complete admin panel for all operations
+- **CORS**: Configured for frontend integration (localhost:5173)
+- **Swagger Documentation**: Interactive API documentation
 
 ## API Documentation
 
@@ -88,31 +89,31 @@ curl http://localhost:3000/api/products
 curl http://localhost:3000/api/products/PRODUCT_ID
 ```
 
-#### Create Product
+#### Create Product (JSON)
 ```sh
 curl -X POST http://localhost:3000/api/products \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
     "name": "Sample Book",
-    "description": "A great book",
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "description": "A classic American novel",
     "price": 1999,
     "currency": "USD",
     "sku": "BOOK001",
     "stock": 10,
+    "category": "Course",
     "slug": "sample-book",
-    "trackInventory": true,
-    "allowBackorder": false,
-    "hasVariants": false,
     "isActive": true
   }'
 ```
 
-#### Create Product with Images
+#### Create Product with Images (Multipart)
 ```sh
-curl -X POST http://localhost:3000/api/products/create-with-images \
+curl -X POST http://localhost:3000/api/products \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -F 'product={"name":"Book with Images","price":2499,"currency":"USD","sku":"BOOK002","stock":5,"slug":"book-with-images","trackInventory":true,"allowBackorder":false,"hasVariants":false,"isActive":true}' \
+  -F 'product={"name":"Book with Images","title":"Advanced React","author":"John Doe","price":2499,"currency":"USD","sku":"BOOK002","stock":5,"category":"Course","slug":"book-with-images","isActive":true}' \
   -F 'images=@image1.jpg' \
   -F 'images=@image2.jpg'
 ```
@@ -236,33 +237,7 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 curl http://localhost:3000/health
 ```
 
-#### Access Web Interface
-```
-http://localhost:3000/
-```
-
-## Web Interface Features
-
-The web interface at `http://localhost:3000/` provides:
-
-1. **User Authentication**
-   - Login/Register forms
-   - JWT token management
-   - Session persistence
-
-2. **Product Management**
-   - Create products with multiple images
-   - Edit existing products
-   - Delete products
-   - View product catalog
-
-3. **Shopping & Orders**
-   - Add products to cart
-   - Checkout process
-   - View order history
-   - Order status tracking
-
-## 🗄️ Database
+## Database
 
 **Development**: SQLite (local file)
 **Production**: Turso (cloud SQLite)
@@ -336,7 +311,7 @@ npm run migrate
 - **Password Hashing**: bcrypt for secure password storage
 - **File Upload Security**: Type and size validation for uploads
 
-## 📜 Scripts
+## Available Scripts
 
 ```bash
 npm start          # Start development server
@@ -344,19 +319,20 @@ npm run build      # Compile TypeScript
 npm run lint       # Code quality check
 npm run migrate    # Run database migrations
 npm run start:prod # Start production server
+npm run clean      # Clean dist folder
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Runtime**: Node.js + TypeScript
 - **Framework**: Express.js
 - **Database**: Drizzle ORM + SQLite/Turso
 - **Auth**: JWT + bcrypt
-- **Validation**: Zod schemas
 - **File Upload**: Multer
-- **Code Quality**: ESLint
+- **Documentation**: Swagger/OpenAPI 3.0
+- **CORS**: Enabled for cross-origin requests
 
-## 🔧 Environment Variables
+## Environment Variables
 
 ```bash
 PORT=3000
@@ -366,12 +342,38 @@ DATABASE_URL=file:./dev.sqlite
 # DATABASE_AUTH_TOKEN=turso-token  # For production
 ```
 
-## 🎯 Migration Benefits
+## Product Schema
 
-**Before**: Complex adapter pattern with multiple abstraction layers
-**After**: Simple MVC with ORM
-- ✅ 70% fewer files
-- ✅ Direct type-safe database queries
-- ✅ Easier to understand and maintain
-- ✅ Same functionality, simpler code
-- ✅ Better performance
+Supports enhanced product structure:
+```typescript
+Product {
+  id: string;
+  title: string;
+  author: string;
+  price: number;
+  category: "Case Study" | "Course" | "Guide";
+  description: string;
+  image: string;
+  rating: number;
+  reviews: number;
+  reviewsList?: Review[];
+}
+```
+
+## Development
+
+**From project root:**
+```bash
+npm run dev        # Start both frontend and backend
+npm run dev:backend # Backend only
+npm run dev:frontend # Frontend only
+```
+
+**CORS Configuration:**
+- Allows requests from localhost:5173 (frontend)
+- Supports credentials for authentication
+
+**API Endpoints:**
+- Base URL: http://localhost:3000/api
+- Documentation: http://localhost:3000/api-docs
+- Health Check: http://localhost:3000/healths

@@ -40,15 +40,35 @@ const options = {
           properties: {
             id: { type: 'string' },
             name: { type: 'string' },
+            title: { type: 'string' },
+            author: { type: 'string' },
             description: { type: 'string' },
-            price: { type: 'integer', description: 'Price in cents' },
+            price: { type: 'number', description: 'Price in cents' },
             currency: { type: 'string', default: 'USD' },
             sku: { type: 'string' },
             stock: { type: 'integer' },
+            category: { type: 'string', enum: ['Case Study', 'Course', 'Guide'] },
             slug: { type: 'string' },
+            image: { type: 'string' },
+            rating: { type: 'number', minimum: 0, maximum: 5 },
+            reviews: { type: 'integer', minimum: 0 },
             isActive: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        Review: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            productId: { type: 'string' },
+            userId: { type: 'string' },
+            rating: { type: 'integer', minimum: 1, maximum: 5 },
+            comment: { type: 'string' },
+            reviewerName: { type: 'string' },
+            reviewerEmail: { type: 'string', format: 'email' },
+            isVerified: { type: 'boolean' },
+            createdAt: { type: 'string', format: 'date-time' },
           },
         },
         Order: {
@@ -188,7 +208,7 @@ const options = {
         },
         post: {
           tags: ['Products'],
-          summary: 'Create a new product',
+          summary: 'Create a new product (with optional images)',
           security: [{ bearerAuth: [] }],
           requestBody: {
             required: true,
@@ -196,16 +216,28 @@ const options = {
               'application/json': {
                 schema: {
                   type: 'object',
-                  required: ['name', 'price', 'sku', 'stock', 'slug'],
+                  required: ['name', 'title', 'price', 'sku', 'stock', 'slug'],
                   properties: {
                     name: { type: 'string' },
+                    title: { type: 'string' },
+                    author: { type: 'string' },
                     description: { type: 'string' },
                     price: { type: 'integer' },
                     currency: { type: 'string', default: 'USD' },
                     sku: { type: 'string' },
                     stock: { type: 'integer' },
+                    category: { type: 'string', enum: ['Case Study', 'Course', 'Guide'] },
                     slug: { type: 'string' },
                     isActive: { type: 'boolean', default: true },
+                  },
+                },
+              },
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    product: { type: 'string', description: 'JSON string of product data' },
+                    images: { type: 'array', items: { type: 'string', format: 'binary' } },
                   },
                 },
               },

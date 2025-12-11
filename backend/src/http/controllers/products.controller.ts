@@ -22,13 +22,14 @@ export class ProductsController {
 
   async createWithImages(req: Request, res: Response) {
     try {
-      const productData = JSON.parse(req.body.product);
+      // Handle both JSON and multipart form data
+      const productData = req.body.product ? JSON.parse(req.body.product) : req.body;
       const files = req.files as Express.Multer.File[];
       
       // Create product first
       const product = await this.productService.createProduct(productData);
       
-      // Upload and link images
+      // Upload and link images if provided
       if (files && files.length > 0) {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];

@@ -14,6 +14,8 @@ export const users = sqliteTable('users', {
 export const products = sqliteTable('products', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
+  title: text('title').notNull(), // New field
+  author: text('author'), // New field
   description: text('description'),
   price: integer('price').notNull(),
   compareAtPrice: integer('compareAtPrice'),
@@ -25,6 +27,7 @@ export const products = sqliteTable('products', {
   lowStockThreshold: integer('lowStockThreshold'),
   trackInventory: integer('trackInventory', { mode: 'boolean' }).notNull().default(true),
   allowBackorder: integer('allowBackorder', { mode: 'boolean' }).notNull().default(false),
+  category: text('category'), // Updated field
   categoryId: text('categoryId'),
   tags: text('tags').default('[]'),
   brand: text('brand'),
@@ -35,6 +38,9 @@ export const products = sqliteTable('products', {
   slug: text('slug').notNull().unique(),
   metaTitle: text('metaTitle'),
   metaDescription: text('metaDescription'),
+  image: text('image'), // New field
+  rating: real('rating').default(0), // New field
+  reviews: integer('reviews').default(0), // New field
   isActive: integer('isActive', { mode: 'boolean' }).notNull().default(true),
   isFeatured: integer('isFeatured', { mode: 'boolean' }).default(false),
   isDigital: integer('isDigital', { mode: 'boolean' }).default(false),
@@ -97,4 +103,17 @@ export const productImages = sqliteTable('product_images', {
   attachmentId: text('attachmentId').notNull(),
   position: integer('position').notNull().default(0),
   isDefault: integer('isDefault', { mode: 'boolean' }).notNull().default(false),
+});
+
+export const reviews = sqliteTable('reviews', {
+  id: text('id').primaryKey(),
+  productId: text('productId').notNull(),
+  userId: text('userId').notNull(),
+  rating: integer('rating').notNull(),
+  comment: text('comment'),
+  reviewerName: text('reviewerName').notNull(),
+  reviewerEmail: text('reviewerEmail'),
+  isVerified: integer('isVerified', { mode: 'boolean' }).default(false),
+  createdAt: text('createdAt').notNull(),
+  updatedAt: text('updatedAt').notNull(),
 });
