@@ -1,14 +1,9 @@
 import express from "express";
 import { AttachmentsController } from "../controllers/attachments.controller.ts";
-import { AttachmentAdapter } from "../../adapters/interfaces/AttachmentAdapter.ts";
 
-export function createAttachmentRouter({ 
-  attachmentAdapter 
-}: { 
-  attachmentAdapter: AttachmentAdapter;
-}): express.Router {
+export function createAttachmentRouter(): express.Router {
   const router = express.Router();
-  const controller = new AttachmentsController(attachmentAdapter);
+  const controller = new AttachmentsController();
 
   router.post("/upload", controller.uploadFile, controller.handleUpload.bind(controller));
   router.get("/:id", controller.getById.bind(controller));

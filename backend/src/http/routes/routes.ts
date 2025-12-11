@@ -1,5 +1,7 @@
 import express from "express";
 import { createAuthRouter } from "./auth.ts";
+import { createProductRouter } from "./product.ts";
+import { createAttachmentRouter } from "./attachments.ts";
 import { AuthService } from "../../services/auth.service.js";
 
 const createRouter = ({ 
@@ -11,9 +13,9 @@ const createRouter = ({
 
   // API routes
   router.use("/auth", createAuthRouter({ authService }));
-  // TODO: Update other routes in next phases
-  // router.use("/products", createProductRouter({ productAdapter, attachmentAdapter }));
-  // router.use("/attachments", createAttachmentRouter({ attachmentAdapter }));
+  router.use("/products", createProductRouter());
+  router.use("/attachments", createAttachmentRouter());
+  // TODO: Update order routes in next phase
   // router.use("/orders", createOrderRouter({ db, authAdapter }));
 
   return router;

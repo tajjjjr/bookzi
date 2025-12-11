@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ProductCatalogAdapter } from '../../adapters/interfaces/ProductCatalogAdapter.ts';
-import { AttachmentAdapter } from '../../adapters/interfaces/AttachmentAdapter.ts';
+import { ProductService } from '../../services/product.service.js';
+import { AttachmentService } from '../../services/attachment.service.js';
 import { Express } from 'express-serve-static-core';
 import multer from 'multer';
 
@@ -10,10 +10,13 @@ const upload = multer({
 });
 
 export class ProductsController {
-  constructor(
-    private productAdapter: ProductCatalogAdapter,
-    private attachmentAdapter: AttachmentAdapter
-  ) {}
+  private productService: ProductService;
+  private attachmentService: AttachmentService;
+
+  constructor() {
+    this.productService = new ProductService();
+    this.attachmentService = new AttachmentService();
+  }
 
   uploadImages = upload.array('images', 10);
 
@@ -23,19 +26,17 @@ export class ProductsController {
       const files = req.files as Express.Multer.File[];
       
       // Create product first
-      const product = await this.productAdapter.createProduct(productData);
+      const product = await this.productService.createProduct(productData);
       
       // Upload and link images
       if (files && files.length > 0) {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          const attachment = await this.attachmentAdapter.upload(file, {
+          const attachment = await this.attachmentService.upload(file, {
             entityType: 'product',
-            entityId: product.id,
-            allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-            maxSize: 10 * 1024 * 1024
+            entityId: product.id
           });
-          await this.productAdapter.addProductImage(product.id, attachment.id, i, i === 0);
+          await this.productService.addProductImage(product.id, attachment.id, i, i === 0);
         }
       }
       
@@ -55,13 +56,12 @@ export class ProductsController {
         return res.status(400).json({ error: 'No image provided' });
       }
       
-      const attachment = await this.attachmentAdapter.upload(req.file, {
+      const attachment = await this.attachmentService.upload(req.file, {
         entityType: 'product',
-        entityId: productId,
-        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp']
+        entityId: productId
       });
       
-      await this.productAdapter.addProductImage(productId, attachment.id, position, isDefault);
+      await this.productService.addProductImage(productId, attachment.id, position, isDefault);
       
       res.json({ success: true, attachment });
     } catch (error) {
@@ -73,8 +73,8 @@ export class ProductsController {
     try {
       const { productId, attachmentId } = req.params;
       
-      await this.productAdapter.removeProductImage(productId, attachmentId);
-      await this.attachmentAdapter.delete(attachmentId);
+      await this.productService.removeProductImage(productId, attachmentId);
+      await this.attachmentService.delete(attachmentId);
       
       res.json({ success: true });
     } catch (error) {
@@ -86,7 +86,7 @@ export class ProductsController {
     try {
       const { productId, attachmentId } = req.params;
       
-      const success = await this.productAdapter.setDefaultImage(productId, attachmentId);
+      const success = await this.productService.setDefaultImage(productId, attachmentId);
       
       res.json({ success });
     } catch (error) {
