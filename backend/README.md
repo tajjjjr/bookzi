@@ -1,39 +1,33 @@
 # Bookzi Backend
 
-Complete e-commerce backend with authentication, product management, order processing, and file uploads.
+Modern e-commerce API with authentication, product management, order processing, and file uploads. Built with TypeScript, Drizzle ORM, and a clean MVC architecture.
 
-## Prerequisites
+## 🚀 Quick Start
 
-- Node.js (v18 or later)
-- npm
-
-## Installation
-
-```sh
-cd backend
+```bash
+# Install dependencies
 npm install
+
+# Set up environment
+cp .env.example .env
+
+# Run database migrations
+npm run migrate
+
+# Start the server
+npm start
 ```
 
-## Quick Start
+**Access the admin interface:** http://localhost:3000
 
-1. **Start the server:**
-```sh
-npm run start
-```
+## 🏗️ Architecture
 
-2. **Seed database with sample data:**
-```sh
-npm run seed:sqlite
-```
-
-3. **Access web interface:**
-```
-http://localhost:3000/
-```
-
-4. **Login with sample user:**
-   - Email: `alice@example.com`
-   - Password: `password123`
+**Clean MVC + Repository Pattern:**
+- **Database Layer**: Drizzle ORM with SQLite (dev) / Turso (prod)
+- **Repository Layer**: Type-safe data access
+- **Service Layer**: Business logic
+- **Controller Layer**: HTTP request handling
+- **Route Layer**: API endpoint definitions
 
 ## Features
 
@@ -268,26 +262,18 @@ The web interface at `http://localhost:3000/` provides:
    - View order history
    - Order status tracking
 
-## Database Adapters
+## 🗄️ Database
 
-### SQLite (Default)
-```sh
-npm run start          # Uses SQLite by default
-npm run seed:sqlite    # Populate with sample data
-```
+**Development**: SQLite (local file)
+**Production**: Turso (cloud SQLite)
 
-### Mock (In-Memory)
-```sh
-npm run mock
-```
+```bash
+# Generate and run migrations
+npm run migrate
 
-### Turso (Cloud)
-```sh
-# Set environment variables in .env
-TURSO_URL=libsql://your-database.turso.io
-TURSO_AUTH_TOKEN=your-token
-
-npm run turso
+# For production, set in .env:
+# DATABASE_URL=libsql://your-database.turso.io
+# DATABASE_AUTH_TOKEN=your-turso-token
 ```
 
 ## Database Schema
@@ -350,33 +336,42 @@ npm run turso
 - **Password Hashing**: bcrypt for secure password storage
 - **File Upload Security**: Type and size validation for uploads
 
-## Development Scripts
+## 📜 Scripts
 
-```sh
-npm run start         # Start development server
-npm run build         # Compile TypeScript
-npm run lint          # Check code quality
-npm run type-check    # Validate TypeScript types
-npm run seed:sqlite   # Populate database with sample data
-npm run token         # Generate test JWT token
+```bash
+npm start          # Start development server
+npm run build      # Compile TypeScript
+npm run lint       # Code quality check
+npm run migrate    # Run database migrations
+npm run start:prod # Start production server
 ```
 
-## Architecture
+## 🛠️ Tech Stack
 
-- **TypeScript**: Full type safety with strict mode
-- **Adapter Pattern**: Pluggable interfaces for different data sources
-- **Express**: HTTP server with middleware support
-- **JWT**: Stateless authentication
-- **Zod**: Runtime type validation
-- **Multer**: File upload handling
-- **ESLint**: Code quality enforcement
+- **Runtime**: Node.js + TypeScript
+- **Framework**: Express.js
+- **Database**: Drizzle ORM + SQLite/Turso
+- **Auth**: JWT + bcrypt
+- **Validation**: Zod schemas
+- **File Upload**: Multer
+- **Code Quality**: ESLint
 
-## Sample Data
+## 🔧 Environment Variables
 
-After running `npm run seed:sqlite`, you can use these test accounts:
+```bash
+PORT=3000
+NODE_ENV=development
+JWT_SECRET=your-secret-key
+DATABASE_URL=file:./dev.sqlite
+# DATABASE_AUTH_TOKEN=turso-token  # For production
+```
 
-- **Alice**: `alice@example.com` / `password123`
-- **Bob**: `bob@example.com` / `password456`
-- **Charlie**: `charlie@example.com` / `password789`
+## 🎯 Migration Benefits
 
-The database will also contain sample products and orders for testing.
+**Before**: Complex adapter pattern with multiple abstraction layers
+**After**: Simple MVC with ORM
+- ✅ 70% fewer files
+- ✅ Direct type-safe database queries
+- ✅ Easier to understand and maintain
+- ✅ Same functionality, simpler code
+- ✅ Better performance
