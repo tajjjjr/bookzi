@@ -9,6 +9,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
+    "start": "tsx ./index.ts",
     "start:prod": "npm run build && node ./dist/index.js",
     "migrate": "npx drizzle-kit generate && npx drizzle-kit migrate"
   },

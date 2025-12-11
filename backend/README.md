@@ -18,7 +18,6 @@ npm run migrate
 npm start
 ```
 
-**Access the admin interface:** http://localhost:3000  
 **API Documentation (Swagger):** http://localhost:3000/api-docs
 
 ## 🏗️ Architecture

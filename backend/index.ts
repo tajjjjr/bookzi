@@ -1,7 +1,6 @@
 import express from "express";
 import swaggerUi from "swagger-ui-express";
 import { createRouter } from "./src/http/routes/routes.js";
-import { createWebRouter } from "./src/http/routes/web.js";
 import { AuthService } from "./src/services/auth.service.js";
 import { specs } from "./src/swagger.js";
 
@@ -17,9 +16,6 @@ app.use('/uploads', express.static('uploads'));
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-// Web interface
-app.use("/", createWebRouter());
-
 // API routes
 app.use("/api", createRouter({ authService }));
 
@@ -30,6 +26,5 @@ app.get("/health", (req, res) => res.json({ status: "ok" }));
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Bookzi API server running on http://localhost:${PORT}`);
-  console.log(`Admin interface: http://localhost:${PORT}`);
   console.log(`API documentation: http://localhost:${PORT}/api-docs`);
 });
