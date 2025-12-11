@@ -1,41 +1,20 @@
 import express from "express";
 import bodyParser from "body-parser";
 import { createRouter } from "./src/http/routes/routes.ts";
-import { createWebRouter } from "./src/http/routes/web.ts";
-import { SQLiteAdapter } from "./src/adapters/sqlite/sqlite.adapter.ts";
-import { AuthAdapter } from "./src/adapters/auth/auth.ts";
-import { ProductCatalogAdapter } from "./src/adapters/products/products.ts";
-import { LocalAttachmentAdapter } from "./src/adapters/attachments/local.ts";
+import { AuthService } from "./src/services/auth.service.ts";
 
 const { json } = bodyParser;
 const app = express();
 
-// Initialize SQLite adapter
-const db = new SQLiteAdapter({
-  filepath: "./dev.sqlite"
-});
-
-// Initialize Auth adapter with JWT secret and SQLite dependency
-const authAdapter = new AuthAdapter(
-  process.env.JWT_SECRET || "dev-secret",
-  db
-);
-
-// Initialize Attachment adapter
-const attachmentAdapter = new LocalAttachmentAdapter(db);
-
-// Initialize Product Catalog adapter
-const productAdapter = new ProductCatalogAdapter(db, attachmentAdapter);
+// Initialize Auth service
+const authService = new AuthService(process.env.JWT_SECRET || "dev-secret");
 
 // Middleware
 app.use(json());
 app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
-// Mount web interface at root
-app.use("/", createWebRouter({ productAdapter, attachmentAdapter, authAdapter }));
-
-// Mount API routes with all adapters
-app.use("/api", createRouter({ db, authAdapter, productAdapter, attachmentAdapter }));
+// Mount API routes
+app.use("/api", createRouter({ authService }));
 
 // Basic health check
 app.get("/health", (req, res) => res.json({ status: "ok" }));

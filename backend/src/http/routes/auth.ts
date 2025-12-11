@@ -1,10 +1,10 @@
 import express from "express";
 import { AuthController } from "../controllers/auth.controller.ts";
-import { AuthAdapter } from "../../adapters/interfaces/AuthAdapter.ts";
+import { AuthService } from "../../services/auth.service.js";
 
-export function createAuthRouter({ authAdapter }: { authAdapter: AuthAdapter }): express.Router {
+export function createAuthRouter({ authService }: { authService: AuthService }): express.Router {
   const router = express.Router();
-  const controller = new AuthController(authAdapter);
+  const controller = new AuthController(authService);
 
   router.post("/login", controller.login);
   router.post("/register", controller.register);
