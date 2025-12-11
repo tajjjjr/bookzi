@@ -26,6 +26,8 @@
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.5.0",
     "body-parser": "^1.20.2",
+    "drizzle-kit": "^0.31.8",
+    "drizzle-orm": "^0.45.1",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
