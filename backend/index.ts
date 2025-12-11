@@ -1,7 +1,7 @@
 import express from "express";
-import { createRouter } from "./src/http/routes/routes.ts";
-import { createWebRouter } from "./src/http/routes/web.ts";
-import { AuthService } from "./src/services/auth.service.ts";
+import { createRouter } from "./src/http/routes/routes.js";
+import { createWebRouter } from "./src/http/routes/web.js";
+import { AuthService } from "./src/services/auth.service.js";
 
 const app = express();
 

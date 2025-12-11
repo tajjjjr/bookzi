@@ -1,8 +1,8 @@
 import express from "express";
-import { createAuthRouter } from "./auth.ts";
-import { createProductRouter } from "./product.ts";
-import { createAttachmentRouter } from "./attachments.ts";
-import { createOrderRouter } from "./order.ts";
+import { createAuthRouter } from "./auth.js";
+import { createProductRouter } from "./product.js";
+import { createAttachmentRouter } from "./attachments.js";
+import { createOrderRouter } from "./order.js";
 import { AuthService } from "../../services/auth.service.js";
 
 const createRouter = ({ 

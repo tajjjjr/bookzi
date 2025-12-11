@@ -1,5 +1,5 @@
 import express from "express";
-import { AttachmentsController } from "../controllers/attachments.controller.ts";
+import { AttachmentsController } from "../controllers/attachments.controller.js";
 
 export function createAttachmentRouter(): express.Router {
   const router = express.Router();

@@ -1,5 +1,5 @@
 import express from "express";
-import { AuthController } from "../controllers/auth.controller.ts";
+import { AuthController } from "../controllers/auth.controller.js";
 import { AuthService } from "../../services/auth.service.js";
 
 export function createAuthRouter({ authService }: { authService: AuthService }): express.Router {
