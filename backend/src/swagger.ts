@@ -365,6 +365,89 @@ const options = {
           },
         },
       },
+      '/api/reviews/product/{productId}': {
+        get: {
+          tags: ['Reviews'],
+          summary: 'Get reviews for a product',
+          parameters: [{ name: 'productId', in: 'path', required: true, schema: { type: 'string' } }],
+          responses: {
+            200: {
+              description: 'List of reviews',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/Review' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          tags: ['Reviews'],
+          summary: 'Create a review for a product (must have purchased)',
+          security: [{ bearerAuth: [] }],
+          parameters: [{ name: 'productId', in: 'path', required: true, schema: { type: 'string' } }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['rating', 'reviewerName'],
+                  properties: {
+                    rating: { type: 'integer', minimum: 1, maximum: 5 },
+                    comment: { type: 'string' },
+                    reviewerName: { type: 'string' },
+                    reviewerEmail: { type: 'string', format: 'email' },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            201: { description: 'Review created', content: { 'application/json': { schema: { $ref: '#/components/schemas/Review' } } } },
+            400: { description: 'Cannot review (not purchased or already reviewed)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
+      '/api/reviews/{reviewId}': {
+        put: {
+          tags: ['Reviews'],
+          summary: 'Update your review',
+          security: [{ bearerAuth: [] }],
+          parameters: [{ name: 'reviewId', in: 'path', required: true, schema: { type: 'string' } }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    rating: { type: 'integer', minimum: 1, maximum: 5 },
+                    comment: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: 'Review updated', content: { 'application/json': { schema: { $ref: '#/components/schemas/Review' } } } },
+            400: { description: 'Unauthorized or review not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+        delete: {
+          tags: ['Reviews'],
+          summary: 'Delete your review',
+          security: [{ bearerAuth: [] }],
+          parameters: [{ name: 'reviewId', in: 'path', required: true, schema: { type: 'string' } }],
+          responses: {
+            200: { description: 'Review deleted', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' } } } } } },
+            400: { description: 'Unauthorized or review not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          },
+        },
+      },
     },
   },
   apis: [],
