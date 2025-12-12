@@ -1,48 +1,45 @@
 import { useEffect, useState } from "react";
-import type { Product, ProductsResponse } from "../../types/products";
+import type { Product } from "../../types/products";
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchProducts() {
       try {
         setLoading(true);
-        setError(null);
+        setError(null); // Reset error on new fetch
 
-        const res = await fetch(`http://localhost:3000/api/products`);
-        if (!res.ok) throw new Error("Failed to fetch products");
+        const res = await fetch(`http://localhost:3000/api/products`, {
+          signal: controller.signal 
+        });
 
-        const json: ProductsResponse = await res.json();
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: Failed to fetch products`);
+        }
 
-        setProducts(json.data);
-        setTotal(json.total);
-        setPage(json.page);
-        setLimit(json.limit);
-        setTotalPages(json.totalPages);
+        const data: Product[] = await res.json();
+        setProducts(data);
       } catch (err: any) {
-        setError(err.message);
+        if (err.name !== 'AbortError') {
+          setError(err.message || "An unexpected error occurred");
+        }
       } finally {
         setLoading(false);
       }
     }
 
     fetchProducts();
+
+    return () => controller.abort(); // Cleanup
   }, []);
 
   return {
     products,
-    total,
-    page,
-    limit,
-    totalPages,
     loading,
     error,
   };
