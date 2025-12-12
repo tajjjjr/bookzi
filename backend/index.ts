@@ -1,47 +1,35 @@
 import express from "express";
-import bodyParser from "body-parser";
-import { createRouter } from "./src/http/routes/routes.ts";
-import { createWebRouter } from "./src/http/routes/web.ts";
-import { SQLiteAdapter } from "./src/adapters/sqlite/sqlite.adapter.ts";
-import { AuthAdapter } from "./src/adapters/auth/auth.ts";
-import { ProductCatalogAdapter } from "./src/adapters/products/products.ts";
-import { LocalAttachmentAdapter } from "./src/adapters/attachments/local.ts";
+import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import { createRouter } from "./src/http/routes/routes.js";
+import { AuthService } from "./src/services/auth.service.js";
+import { specs } from "./src/swagger.js";
 
-const { json } = bodyParser;
 const app = express();
 
-// Initialize SQLite adapter
-const db = new SQLiteAdapter({
-  filepath: "./dev.sqlite"
-});
-
-// Initialize Auth adapter with JWT secret and SQLite dependency
-const authAdapter = new AuthAdapter(
-  process.env.JWT_SECRET || "dev-secret",
-  db
-);
-
-// Initialize Attachment adapter
-const attachmentAdapter = new LocalAttachmentAdapter(db);
-
-// Initialize Product Catalog adapter
-const productAdapter = new ProductCatalogAdapter(db, attachmentAdapter);
+// Initialize services
+const authService = new AuthService(process.env.JWT_SECRET || "dev-secret");
 
 // Middleware
-app.use(json());
-app.use('/uploads', express.static('uploads')); // Serve uploaded files
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
-// Mount web interface at root
-app.use("/", createWebRouter({ productAdapter, attachmentAdapter, authAdapter }));
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-// Mount API routes with all adapters
-app.use("/api", createRouter({ db, authAdapter, productAdapter, attachmentAdapter }));
+// API routes
+app.use("/api", createRouter({ authService }));
 
-// Basic health check
+// Health check
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 // Start server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Backend Auth server running on http://localhost:${PORT}`);
+  console.log(`Bookzi API server running on http://localhost:${PORT}`);
+  console.log(`API documentation: http://localhost:${PORT}/api-docs`);
 });
