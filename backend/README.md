@@ -1,47 +1,42 @@
 # Bookzi Backend
 
-Complete e-commerce backend with authentication, product management, order processing, and file uploads.
-
-## Prerequisites
-
-- Node.js (v18 or later)
-- npm
-
-## Installation
-
-```sh
-cd backend
-npm install
-```
+Modern e-commerce API with authentication, product management, order processing, and file uploads. Built with TypeScript, Drizzle ORM, and a clean MVC architecture.
 
 ## Quick Start
 
-1. **Start the server:**
-```sh
-npm run start
+```bash
+# Install dependencies
+npm install
+
+# Set up environment
+cp .env.example .env
+
+# Run database migrations
+npm run migrate
+
+# Start the server
+npm start
 ```
 
-2. **Seed database with sample data:**
-```sh
-npm run seed:sqlite
-```
+**API Documentation:** http://localhost:3000/api-docs
 
-3. **Access web interface:**
-```
-http://localhost:3000/
-```
+## Architecture
 
-4. **Login with sample user:**
-   - Email: `alice@example.com`
-   - Password: `password123`
+**Clean MVC + Repository Pattern:**
+- **Database Layer**: Drizzle ORM with SQLite (dev) / Turso (prod)
+- **Repository Layer**: Type-safe data access
+- **Service Layer**: Business logic
+- **Controller Layer**: HTTP request handling
+- **Route Layer**: API endpoint definitions
 
-## Features
+## Core Features
 
 - **Authentication**: JWT-based user registration and login
-- **Product Management**: Full CRUD with image uploads and inventory tracking
+- **Product Management**: Full CRUD with image uploads, categories, and reviews
 - **Order Management**: Secure order processing with user isolation
 - **File Uploads**: Image management with local storage
-- **Web Interface**: Complete admin panel for all operations
+- **CORS**: Configured for frontend integration (localhost:5173)
+- **Swagger Documentation**: Interactive API documentation
 
 ## API Documentation
 
@@ -94,31 +89,31 @@ curl http://localhost:3000/api/products
 curl http://localhost:3000/api/products/PRODUCT_ID
 ```
 
-#### Create Product
+#### Create Product (JSON)
 ```sh
 curl -X POST http://localhost:3000/api/products \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
     "name": "Sample Book",
-    "description": "A great book",
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "description": "A classic American novel",
     "price": 1999,
     "currency": "USD",
     "sku": "BOOK001",
     "stock": 10,
+    "category": "Course",
     "slug": "sample-book",
-    "trackInventory": true,
-    "allowBackorder": false,
-    "hasVariants": false,
     "isActive": true
   }'
 ```
 
-#### Create Product with Images
+#### Create Product with Images (Multipart)
 ```sh
-curl -X POST http://localhost:3000/api/products/create-with-images \
+curl -X POST http://localhost:3000/api/products \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -F 'product={"name":"Book with Images","price":2499,"currency":"USD","sku":"BOOK002","stock":5,"slug":"book-with-images","trackInventory":true,"allowBackorder":false,"hasVariants":false,"isActive":true}' \
+  -F 'product={"name":"Book with Images","title":"Advanced React","author":"John Doe","price":2499,"currency":"USD","sku":"BOOK002","stock":5,"category":"Course","slug":"book-with-images","isActive":true}' \
   -F 'images=@image1.jpg' \
   -F 'images=@image2.jpg'
 ```
@@ -242,52 +237,18 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 curl http://localhost:3000/health
 ```
 
-#### Access Web Interface
-```
-http://localhost:3000/
-```
+## Database
 
-## Web Interface Features
+**Development**: SQLite (local file)
+**Production**: Turso (cloud SQLite)
 
-The web interface at `http://localhost:3000/` provides:
+```bash
+# Generate and run migrations
+npm run migrate
 
-1. **User Authentication**
-   - Login/Register forms
-   - JWT token management
-   - Session persistence
-
-2. **Product Management**
-   - Create products with multiple images
-   - Edit existing products
-   - Delete products
-   - View product catalog
-
-3. **Shopping & Orders**
-   - Add products to cart
-   - Checkout process
-   - View order history
-   - Order status tracking
-
-## Database Adapters
-
-### SQLite (Default)
-```sh
-npm run start          # Uses SQLite by default
-npm run seed:sqlite    # Populate with sample data
-```
-
-### Mock (In-Memory)
-```sh
-npm run mock
-```
-
-### Turso (Cloud)
-```sh
-# Set environment variables in .env
-TURSO_URL=libsql://your-database.turso.io
-TURSO_AUTH_TOKEN=your-token
-
-npm run turso
+# For production, set in .env:
+# DATABASE_URL=libsql://your-database.turso.io
+# DATABASE_AUTH_TOKEN=your-turso-token
 ```
 
 ## Database Schema
@@ -350,33 +311,69 @@ npm run turso
 - **Password Hashing**: bcrypt for secure password storage
 - **File Upload Security**: Type and size validation for uploads
 
-## Development Scripts
+## Available Scripts
 
-```sh
-npm run start         # Start development server
-npm run build         # Compile TypeScript
-npm run lint          # Check code quality
-npm run type-check    # Validate TypeScript types
-npm run seed:sqlite   # Populate database with sample data
-npm run token         # Generate test JWT token
+```bash
+npm start          # Start development server
+npm run build      # Compile TypeScript
+npm run lint       # Code quality check
+npm run migrate    # Run database migrations
+npm run start:prod # Start production server
+npm run clean      # Clean dist folder
 ```
 
-## Architecture
+## Tech Stack
 
-- **TypeScript**: Full type safety with strict mode
-- **Adapter Pattern**: Pluggable interfaces for different data sources
-- **Express**: HTTP server with middleware support
-- **JWT**: Stateless authentication
-- **Zod**: Runtime type validation
-- **Multer**: File upload handling
-- **ESLint**: Code quality enforcement
+- **Runtime**: Node.js + TypeScript
+- **Framework**: Express.js
+- **Database**: Drizzle ORM + SQLite/Turso
+- **Auth**: JWT + bcrypt
+- **File Upload**: Multer
+- **Documentation**: Swagger/OpenAPI 3.0
+- **CORS**: Enabled for cross-origin requests
 
-## Sample Data
+## Environment Variables
 
-After running `npm run seed:sqlite`, you can use these test accounts:
+```bash
+PORT=3000
+NODE_ENV=development
+JWT_SECRET=your-secret-key
+DATABASE_URL=file:./dev.sqlite
+# DATABASE_AUTH_TOKEN=turso-token  # For production
+```
 
-- **Alice**: `alice@example.com` / `password123`
-- **Bob**: `bob@example.com` / `password456`
-- **Charlie**: `charlie@example.com` / `password789`
+## Product Schema
 
-The database will also contain sample products and orders for testing.
+Supports enhanced product structure:
+```typescript
+Product {
+  id: string;
+  title: string;
+  author: string;
+  price: number;
+  category: "Case Study" | "Course" | "Guide";
+  description: string;
+  image: string;
+  rating: number;
+  reviews: number;
+  reviewsList?: Review[];
+}
+```
+
+## Development
+
+**From project root:**
+```bash
+npm run dev        # Start both frontend and backend
+npm run dev:backend # Backend only
+npm run dev:frontend # Frontend only
+```
+
+**CORS Configuration:**
+- Allows requests from localhost:5173 (frontend)
+- Supports credentials for authentication
+
+**API Endpoints:**
+- Base URL: http://localhost:3000/api
+- Documentation: http://localhost:3000/api-docs
+- Health Check: http://localhost:3000/healths
