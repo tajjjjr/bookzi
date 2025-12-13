@@ -8,6 +8,7 @@ export function createAuthRouter({ authService }: { authService: AuthService }):
 
   router.post("/login", loginValidation, controller.login);
   router.post("/register", registerValidation, controller.register);
+  router.post("/google", controller.googleLogin);
 
   return router;
 }
