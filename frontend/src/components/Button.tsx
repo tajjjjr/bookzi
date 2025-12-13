@@ -26,9 +26,9 @@ export const Button: React.FC<ButtonProps> = ({
   const variants = {
     primary:
       // UPDATED: Increased shadow for a more prominent glow
-      "bg-[#CFFF24] text-black hover:bg-accent-dark hover:shadow-[0_0_30px_rgba(207,255,36,0.6)]",
+      "bg-[#CFFF24] text-black hover:bg-accent-dark hover:shadow-[0_0_30px_rgba(207,255,36,0.6)] hover:cursor-pointer",
     secondary:
-      "bg-transparent text-white border border-white/20 hover:bg-white/10 hover:border-white/40 backdrop-blur-sm",
+      "bg-transparent text-white border border-white/20 hover:bg-white/10 hover:border-white/40 hover:cursor-pointer backdrop-blur-sm",
   };
 
   // New style for the icon wrapper to handle the 360 rotation
