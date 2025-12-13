@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLoginCustomer } from "../hooks/auth/use_login_customer";
 import { updateMeta } from "../lib/set_metadata";
 import { Button } from "./Button";
 import {
@@ -144,6 +145,8 @@ const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [registerStep, setRegisterStep] = useState(1);
   const [animate, setAnimate] = useState(false);
+  const { login, isLoading, error } = useLoginCustomer();
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
   // Update metadata on mount
   useEffect(() => {
@@ -159,6 +162,26 @@ const AuthPage: React.FC = () => {
 
     updateMeta("og:title", `TAJJJR – ${capitalized}`);
   }, [mode]);
+
+  // This effect clears the error when the user switches between Login and Register modes
+  useEffect(() => {
+    setFormData({ email: "", password: "" });
+  }, [mode]);
+
+  // Function to handle login form submission
+  const handleLoginSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    const result = await login({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (result) {
+      // Redirect to home or dashboard on success
+      window.location.href = "/shop";
+    }
+  };
 
   // Trigger animation on mount
   useEffect(() => {
@@ -224,35 +247,44 @@ const AuthPage: React.FC = () => {
               {mode === "login" ? (
                 // --- Login Form ---
                 <>
+                  {/* Display Error Message if login fails */}
+                  {error && (
+                    <div className="text-red-500 text-xs bg-red-500/10 p-3 rounded-lg border border-red-500/20 animate-in fade-in zoom-in duration-200">
+                      {error}
+                    </div>
+                  )}
+
                   <InputField
                     type="email"
                     placeholder="Enter your email"
                     icon={<MailIcon className="w-5 h-5" />}
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                   />
                   <InputField
                     type="password"
                     placeholder="Enter your password"
                     icon={<LockIcon className="w-5 h-5" />}
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
                   />
 
                   <div className="flex items-center justify-between text-xs mt-2">
-                    <label className="flex items-center gap-2 cursor-pointer text-gray-400 hover:text-gray-300">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 rounded border-gray-700 bg-[#1A1A1A] text-[var(--accent)] focus:ring-[var(--accent)]"
-                      />
-                      Remember me
-                    </label>
-                    <a
-                      href="#"
-                      className="text-[var(--accent)] hover:underline decoration-[var(--accent)]/50 underline-offset-4 font-medium"
-                    >
-                      Forgot password?
-                    </a>
+                    {/* ... keep your Remember me / Forgot password code ... */}
                   </div>
 
                   {/* Submit Button */}
-                  <Button variant="primary" label="Login" className="w-full" />
+                  <Button
+                    variant="primary"
+                    label={isLoading ? "Authenticating..." : "Login"}
+                    className="w-full"
+                    onClick={handleLoginSubmit}
+                    disabled={isLoading}
+                  />
                 </>
               ) : (
                 // --- Registration Form (Paginated) ---
@@ -284,13 +316,20 @@ const AuthPage: React.FC = () => {
                       />
 
                       {/* Step 1 Button */}
-                      <button
+                      <Button
+                        variant="primary"
+                        label="Next"
+                        icon={ArrowRightIcon}
+                        className="w-full"
+                        onClick={() => setRegisterStep(2)}
+                      />
+                      {/* <button
                         onClick={() => setRegisterStep(2)}
                         className="w-full bg-[var(--accent)] hover:bg-[#bce620] text-black text-sm py-3.5 rounded-full shadow-[0_0_20px_rgba(207,255,36,0.3)] hover:shadow-[0_0_30px_rgba(207,255,36,0.5)] transition-all duration-300 mt-6 flex items-center justify-center gap-2 group"
                       >
                         Next
                         <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                      </button>
+                      </button> */}
                     </div>
                   ) : (
                     /* Step 2: Address & Image */
@@ -332,12 +371,13 @@ const AuthPage: React.FC = () => {
                       </div>
 
                       <div className="flex gap-3 mt-6">
-                        <button
+                        <Button
+                          variant="secondary"
+                          label=""
+                          icon={ArrowLeftIcon}
+                          iconPlacement="left"
                           onClick={() => setRegisterStep(1)}
-                          className="w-1/3 bg-[#1A1A1A] hover:bg-[#252525] text-white font-bold text-sm py-3.5 rounded-full border border-gray-800 transition-all duration-300 flex items-center justify-center gap-2 group"
-                        >
-                          <ArrowLeftIcon className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                        </button>
+                        />
                         <Button
                           variant="primary"
                           label="Create Account"
