@@ -22,32 +22,20 @@ import AuthPage from "./components/AuthPage";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/shop",
     element: <App />,
     children: [
       {
-        path: "shop",
+        index: true,
         element: <LandingPage />,
       },
       {
-        path: "product/:id",
+        path: ":id",
         element: <ProductPage />,
       },
       {
-        path: "cart",
+        path: "/shop/cart",
         element: <CartPage />,
-      },
-      {
-        path: "checkout",
-        element: <Checkout />,
-      },
-      {
-        path: "thank-you",
-        element: <ThankYouPage />,
-      },
-      {
-        path: "auth",
-        element: <AuthPage />,
       },
       {
         path: "account",
@@ -70,6 +58,22 @@ const router = createBrowserRouter([
           },
         ]
       },
+      {
+        path: "account/review/:productId",
+        element: <CreateReviewPage />,
+      },
+      {
+        path: "/shop/checkout",
+        element: <Checkout />,
+      },
+      {
+        path: "/shop/thank-you",
+        element: <ThankYouPage />,
+      },
+      {
+        path: "/shop/auth",
+        element: <AuthPage />,
+      }
     ],
   },
 ]);
