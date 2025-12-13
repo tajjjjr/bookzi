@@ -39,13 +39,14 @@ export class AuthService {
     return isValid ? user : null;
   }
 
-  async createUser(userData: { name: string; email: string; password: string; phone_number?: string; country?: string; zip_code?: string }): Promise<typeof users.$inferSelect> {
+  async createUser(userData: { first_name: string; last_name: string; email: string; password: string; phone_number?: string; country?: string; zip_code?: string }): Promise<typeof users.$inferSelect> {
     const hashedPassword = await bcrypt.hash(userData.password, 12);
     const now = new Date().toISOString();
     
     return await this.userRepo.create({
       id: randomUUID(),
-      name: userData.name,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
       email: userData.email,
       password: hashedPassword,
       phone_number: userData.phone_number ? encrypt(userData.phone_number) : null,

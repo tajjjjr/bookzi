@@ -8,7 +8,8 @@ export const loginValidation = [
 ];
 
 export const registerValidation = [
-  body('name').trim().isLength({ min: 2, max: 50 }),
+  body('first_name').trim().isLength({ min: 2, max: 50 }),
+  body('last_name').trim().isLength({ min: 2, max: 50 }),
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 8 }).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
 ];
@@ -40,7 +41,8 @@ export class AuthController {
         token, 
         user: { 
           id: user.id, 
-          name: user.name, 
+          first_name: user.first_name,
+          last_name: user.last_name, 
           email: user.email 
         } 
       });
@@ -57,7 +59,7 @@ export class AuthController {
         return;
       }
 
-      const { name, email, password } = req.body;
+      const { first_name, last_name, email, password } = req.body;
 
       const emailExists = await this.authService.emailExists(email);
       if (emailExists) {
@@ -65,7 +67,7 @@ export class AuthController {
         return;
       }
 
-      const user = await this.authService.createUser({ name, email, password });
+      const user = await this.authService.createUser({ first_name, last_name, email, password });
       const token = this.authService.signToken(user);
 
       res.status(201).json({ 

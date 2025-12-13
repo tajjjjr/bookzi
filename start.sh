@@ -7,9 +7,16 @@ sleep 2
 
 echo "Starting Bookzi application..."
 
+# Install dependencies
+echo "Installing dependencies..."
+cd backend
+npm install
+cd ../frontend
+npm install
+
 # Start backend on port 3000
 echo "Starting backend server..."
-cd backend
+cd ../backend
 npm start &
 BACKEND_PID=$!
 
