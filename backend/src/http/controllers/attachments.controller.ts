@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AttachmentAdapter } from '../../adapters/interfaces/AttachmentAdapter.ts';
+import { AttachmentService } from '../../services/attachment.service.js';
 import multer from 'multer';
 
 const upload = multer({ 
@@ -8,7 +8,11 @@ const upload = multer({
 });
 
 export class AttachmentsController {
-  constructor(private attachmentAdapter: AttachmentAdapter) {}
+  private attachmentService: AttachmentService;
+
+  constructor() {
+    this.attachmentService = new AttachmentService();
+  }
 
   uploadFile = upload.single('file');
 
@@ -20,11 +24,9 @@ export class AttachmentsController {
 
       const { entityType, entityId } = req.body;
       
-      const attachment = await this.attachmentAdapter.upload(req.file, {
+      const attachment = await this.attachmentService.upload(req.file, {
         entityType,
-        entityId,
-        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-        maxSize: 10 * 1024 * 1024
+        entityId
       });
 
       res.json(attachment);
@@ -35,7 +37,7 @@ export class AttachmentsController {
 
   async getById(req: Request, res: Response) {
     try {
-      const attachment = await this.attachmentAdapter.getById(req.params.id);
+      const attachment = await this.attachmentService.getById(req.params.id);
       if (!attachment) {
         return res.status(404).json({ error: 'Attachment not found' });
       }
@@ -48,7 +50,7 @@ export class AttachmentsController {
   async getByEntity(req: Request, res: Response) {
     try {
       const { entityType, entityId } = req.params;
-      const attachments = await this.attachmentAdapter.getByEntity(entityType, entityId);
+      const attachments = await this.attachmentService.getByEntity(entityType, entityId);
       res.json(attachments);
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
@@ -57,7 +59,7 @@ export class AttachmentsController {
 
   async delete(req: Request, res: Response) {
     try {
-      const deleted = await this.attachmentAdapter.delete(req.params.id);
+      const deleted = await this.attachmentService.delete(req.params.id);
       if (!deleted) {
         return res.status(404).json({ error: 'Attachment not found' });
       }

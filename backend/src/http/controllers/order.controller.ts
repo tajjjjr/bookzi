@@ -1,17 +1,40 @@
 import { Request, Response } from "express";
-import { OrderService } from "../../core/services/order.service.ts";
+import { OrderService } from "../../services/order.service.js";
 
 export class OrderController {
-  constructor(private orderService: OrderService) {
+  private orderService: OrderService;
+
+  constructor() {
+    this.orderService = new OrderService();
     this.create = this.create.bind(this);
     this.getAll = this.getAll.bind(this);
+    this.getById = this.getById.bind(this);
+    this.updateStatus = this.updateStatus.bind(this);
+    this.cancel = this.cancel.bind(this);
   }
 
   getAll = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user!.id;
     try {
-      const orders = await this.orderService.listOrdersForUser(Number(userId));
-      res.json(orders);
+      const userId = req.user!.id;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const result = await this.orderService.getOrdersByUserId(userId, { page, limit });
+      res.json(result);
+    } catch (error) {
+      console.error('Orders error:', error);
+      res.status(500).json({ error: "Server error" });
+    }
+  };
+
+  getById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const order = await this.orderService.getOrderById(req.params.id);
+      if (!order) {
+        res.status(404).json({ error: "Order not found" });
+        return;
+      }
+      res.json(order);
     } catch {
       res.status(500).json({ error: "Server error" });
     }
@@ -19,30 +42,43 @@ export class OrderController {
 
   create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = req.user!.id;
-      const { items } = req.validated as { items: import("../../adapters/interfaces/DBAdapter.ts").OrderItem[] };
+      const orderData = req.body;
+      // Always use the authenticated user's ID from JWT token
+      orderData.userId = req.user!.id;
+      
+      const order = await this.orderService.createOrder(orderData);
+      res.status(201).json(order);
+    } catch (error) {
+      console.error('Create order error:', error);
+      res.status(500).json({ error: "Server error" });
+    }
+  };
 
-      const order = await this.orderService.createOrder({ userId: Number(userId), items });
-
-      res.json(order);
-    } catch (err) {
-      if (err instanceof Error) {
-        switch (err.message) {
-          case "EMPTY_ORDER":
-            res.status(400).json({ error: "Order has no items" });
-            return;
-          case "INSUFFICIENT_STOCK":
-            res.status(400).json({ error: "Insufficient stock" });
-            return;
-          case "PRODUCT_NOT_FOUND":
-            res.status(404).json({ error: "Product not found" });
-            return;
-          default:
-            res.status(500).json({ error: "Server error" });
-        }
-      } else {
-        res.status(500).json({ error: "Server error" });
+  updateStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { status } = req.body;
+      const order = await this.orderService.updateOrderStatus(req.params.id, status);
+      if (!order) {
+        res.status(404).json({ error: "Order not found" });
+        return;
       }
+      res.json(order);
+    } catch {
+      res.status(500).json({ error: "Server error" });
+    }
+  };
+
+  cancel = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { reason } = req.body;
+      const order = await this.orderService.cancelOrder(req.params.id, reason);
+      if (!order) {
+        res.status(404).json({ error: "Order not found" });
+        return;
+      }
+      res.json(order);
+    } catch {
+      res.status(500).json({ error: "Server error" });
     }
   };
 }

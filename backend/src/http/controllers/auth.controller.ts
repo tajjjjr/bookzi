@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { AuthAdapter } from "../../adapters/interfaces/AuthAdapter.ts";
+import { AuthService } from "../../services/auth.service.js";
 
 export class AuthController {
-  constructor(private authAdapter: AuthAdapter) {
+  constructor(private authService: AuthService) {
     this.login = this.login.bind(this);
     this.register = this.register.bind(this);
   }
@@ -16,13 +16,13 @@ export class AuthController {
         return;
       }
 
-      const user = await this.authAdapter.validateCredentials(email, password);
+      const user = await this.authService.validateCredentials(email, password);
       if (!user) {
         res.status(401).json({ error: "Invalid credentials" });
         return;
       }
 
-      const token = this.authAdapter.signToken(user);
+      const token = this.authService.signToken(user);
       res.json({ 
         token, 
         user: { 
@@ -45,14 +45,14 @@ export class AuthController {
         return;
       }
 
-      const emailExists = await this.authAdapter.emailExists(email);
+      const emailExists = await this.authService.emailExists(email);
       if (emailExists) {
         res.status(409).json({ error: "Email already exists" });
         return;
       }
 
-      const user = await this.authAdapter.createUser({ name, email, password });
-      const token = this.authAdapter.signToken(user);
+      const user = await this.authService.createUser({ name, email, password });
+      const token = this.authService.signToken(user);
 
       res.status(201).json({ 
         token, 

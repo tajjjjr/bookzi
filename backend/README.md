@@ -1,66 +1,71 @@
 # Bookzi Backend
 
-TypeScript-based backend API with mock adapters for testing and development.
+Modern e-commerce API with authentication, product management, order processing, and file uploads. Built with TypeScript, Drizzle ORM, and a clean MVC architecture.
 
-## Prerequisites
-
-- Node.js (v18 or later)
-- npm
-
-## Installation
-
-```sh
-cd backend
-npm install
-```
-
-## Development
-
-### Start Development Server
-```sh
-npm run start
-```
-Server runs on http://localhost:3000
-
-### Build & Lint
-```sh
-npm run build        # Compile TypeScript
-npm run lint         # Check code quality
-npm run type-check   # Validate types
-```
-
-## Seed SQLite Database
-
-In order to test the product and order pages, you need to seed the database first. This command will create some data you can use to test the application.
+## Quick Start
 
 ```bash
-npm run seed:sqlite  # Seed SQLite database with sample data
+# Install dependencies
+npm install
+
+# Set up environment
+cp .env.example .env
+
+# Run database migrations
+npm run migrate
+
+# Start the server
+npm start
 ```
 
-## Authentication
+**API Documentation:** http://localhost:3000/api-docs
 
-### Register New User
+## Architecture
+
+**Clean MVC + Repository Pattern:**
+- **Database Layer**: Drizzle ORM with SQLite (dev) / Turso (prod)
+- **Repository Layer**: Type-safe data access
+- **Service Layer**: Business logic
+- **Controller Layer**: HTTP request handling
+- **Route Layer**: API endpoint definitions
+
+## Core Features
+
+- **Authentication**: JWT-based user registration and login
+- **Product Management**: Full CRUD with image uploads, categories, and reviews
+- **Order Management**: Secure order processing with user isolation
+- **File Uploads**: Image management with local storage
+- **CORS**: Configured for frontend integration (localhost:5173)
+- **Swagger Documentation**: Interactive API documentation
+
+## API Documentation
+
+All API routes are prefixed with `/api` and protected routes require JWT authentication.
+
+### Authentication
+
+#### Register User
 ```sh
 curl -X POST http://localhost:3000/api/auth/register \
-     -H "Content-Type: application/json" \
-     -d '{"name":"John Doe","email":"john@example.com","password":"mypassword"}'
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "mypassword"
+  }'
 ```
 
-### Login Existing User
+#### Login User
 ```sh
 curl -X POST http://localhost:3000/api/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"email":"alice@example.com","password":"password123"}'
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "alice@example.com",
+    "password": "password123"
+  }'
 ```
 
-### Generate Test Token (CLI)
-```sh
-npm run jwt "1"
-```
-
-### Using Authentication Token
-
-Both login and register return a JWT token:
+**Response:**
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -72,156 +77,303 @@ Both login and register return a JWT token:
 }
 ```
 
-Use the token in protected requests:
-```
-Authorization: Bearer YOUR_JWT_TOKEN
-```
+### Products
 
-## API Endpoints
-
-All routes are prefixed with `/api`.
-
-### Public Routes
-
-#### Get Products
+#### List Products
 ```sh
 curl http://localhost:3000/api/products
 ```
+
+#### Get Single Product
+```sh
+curl http://localhost:3000/api/products/PRODUCT_ID
+```
+
+#### Create Product (JSON)
+```sh
+curl -X POST http://localhost:3000/api/products \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "Sample Book",
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "description": "A classic American novel",
+    "price": 1999,
+    "currency": "USD",
+    "sku": "BOOK001",
+    "stock": 10,
+    "category": "Course",
+    "slug": "sample-book",
+    "isActive": true
+  }'
+```
+
+#### Create Product with Images (Multipart)
+```sh
+curl -X POST http://localhost:3000/api/products \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -F 'product={"name":"Book with Images","title":"Advanced React","author":"John Doe","price":2499,"currency":"USD","sku":"BOOK002","stock":5,"category":"Course","slug":"book-with-images","isActive":true}' \
+  -F 'images=@image1.jpg' \
+  -F 'images=@image2.jpg'
+```
+
+#### Update Product
+```sh
+curl -X PUT http://localhost:3000/api/products/PRODUCT_ID \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "Updated Book Name",
+    "price": 2499,
+    "stock": 15
+  }'
+```
+
+#### Delete Product
+```sh
+curl -X DELETE http://localhost:3000/api/products/PRODUCT_ID \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Orders (Protected Routes)
+
+#### List User Orders
+```sh
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  "http://localhost:3000/api/orders?page=1&limit=10"
+```
+
+#### Get Single Order
+```sh
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:3000/api/orders/ORDER_ID
+```
+
+#### Create Order
+```sh
+curl -X POST http://localhost:3000/api/orders \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "userId": "user-123",
+    "items": [{
+      "productId": "prod-1",
+      "productName": "Sample Book",
+      "sku": "BOOK001",
+      "quantity": 2,
+      "price": 1999,
+      "subtotal": 3998,
+      "tax": 320,
+      "total": 4318,
+      "isFulfilled": false,
+      "isRefunded": false
+    }],
+    "subtotal": 3998,
+    "tax": 320,
+    "shippingCost": 0,
+    "total": 4318,
+    "currency": "USD",
+    "customerEmail": "customer@example.com",
+    "customerPhone": "+1234567890",
+    "notes": "Please handle with care"
+  }'
+```
+
+#### Update Order Status
+```sh
+curl -X PATCH http://localhost:3000/api/orders/ORDER_ID/status \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{"status": "shipped"}'
+```
+
+#### Cancel Order
+```sh
+curl -X POST http://localhost:3000/api/orders/ORDER_ID/cancel \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{"reason": "Customer requested cancellation"}'
+```
+
+### File Management
+
+#### Upload File
+```sh
+curl -X POST http://localhost:3000/api/attachments/upload \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -F 'file=@image.jpg'
+```
+
+#### Add Image to Product
+```sh
+curl -X POST http://localhost:3000/api/products/PRODUCT_ID/images \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -F 'image=@product-image.jpg'
+```
+
+#### Remove Product Image
+```sh
+curl -X DELETE http://localhost:3000/api/products/PRODUCT_ID/images/ATTACHMENT_ID \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+#### Set Default Product Image
+```sh
+curl -X PUT http://localhost:3000/api/products/PRODUCT_ID/images/ATTACHMENT_ID/default \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+#### Get Files for Entity
+```sh
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:3000/api/attachments/entity/product/PRODUCT_ID
+```
+
+### Public Routes
 
 #### Health Check
 ```sh
 curl http://localhost:3000/health
 ```
 
-### Protected Routes (Require Authentication)
+## Database
 
-#### Get Orders
-```sh
-curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-     http://localhost:3000/api/orders
-```
+**Development**: SQLite (local file)
+**Production**: Turso (cloud SQLite)
 
-#### Create Order
-```sh
-curl -X POST \
-     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"items":[{"productId":1,"quantity":2}]}' \
-     http://localhost:3000/api/orders
-```
-
-## Example HTML CRUD For Products
-
-1. Start the server:
 ```bash
-npm run start
+# Generate and run migrations
+npm run migrate
+
+# For production, set in .env:
+# DATABASE_URL=libsql://your-database.turso.io
+# DATABASE_AUTH_TOKEN=your-turso-token
 ```
 
-2. Navigate to the web interface:
-```
-http://localhost:3000/
-```
+## Database Schema
 
-3. **Login/Register**: Create an account or login with existing credentials
+### Users Table
+- `id` (TEXT PRIMARY KEY)
+- `name` (TEXT NOT NULL)
+- `email` (TEXT UNIQUE NOT NULL)
+- `password` (TEXT NOT NULL) - bcrypt hashed
+- `created_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
+- `updated_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
 
-4. **Product Management**: Full CRUD operations with image upload support
-   - Create products with multiple images
-   - View all products with images
-   - Edit existing products
-   - Delete products
+### Products Table
+- `id` (TEXT PRIMARY KEY)
+- `name` (TEXT NOT NULL)
+- `description` (TEXT)
+- `price` (INTEGER NOT NULL) - in cents
+- `currency` (TEXT DEFAULT 'USD')
+- `sku` (TEXT UNIQUE NOT NULL)
+- `stock` (INTEGER DEFAULT 0)
+- `slug` (TEXT UNIQUE NOT NULL)
+- `is_active` (BOOLEAN DEFAULT 1)
+- `created_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
+- `updated_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
 
-### Supported Product API Routes
+### Orders Table
+- `id` (TEXT PRIMARY KEY)
+- `order_number` (TEXT UNIQUE NOT NULL)
+- `user_id` (TEXT NOT NULL)
+- `items` (TEXT NOT NULL) - JSON array
+- `subtotal` (INTEGER NOT NULL)
+- `tax` (INTEGER DEFAULT 0)
+- `shipping_cost` (INTEGER DEFAULT 0)
+- `total` (INTEGER NOT NULL)
+- `currency` (TEXT DEFAULT 'USD')
+- `status` (TEXT DEFAULT 'pending')
+- `customer_email` (TEXT NOT NULL)
+- `customer_phone` (TEXT)
+- `notes` (TEXT)
+- `created_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
+- `updated_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
 
-#### Basic CRUD
-- `GET /api/products` - List products with filters/pagination
-- `GET /api/products/:id` - Get single product
-- `POST /api/products` - Create product (without images)
-- `PUT /api/products/:id` - Update product
-- `DELETE /api/products/:id` - Delete product
+### Attachments Table
+- `id` (TEXT PRIMARY KEY)
+- `filename` (TEXT NOT NULL)
+- `original_name` (TEXT NOT NULL)
+- `mime_type` (TEXT NOT NULL)
+- `size` (INTEGER NOT NULL)
+- `url` (TEXT NOT NULL)
+- `path` (TEXT NOT NULL)
+- `entity_type` (TEXT)
+- `entity_id` (TEXT)
+- `created_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
 
-#### Image Management
-- `POST /api/products/create-with-images` - Create product + upload images
-- `POST /api/products/:productId/images` - Add image to existing product
-- `DELETE /api/products/:productId/images/:attachmentId` - Remove product image
-- `PUT /api/products/:productId/images/:attachmentId/default` - Set default image
+## Security Features
 
-#### File Operations
-- `POST /api/attachments/upload` - Upload standalone file
-- `GET /api/attachments/:id` - Get attachment metadata
-- `GET /api/attachments/entity/:entityType/:entityId` - Get files for entity
-- `DELETE /api/attachments/:id` - Delete attachment
+- **JWT Authentication**: Secure token-based authentication
+- **User Isolation**: Orders are automatically attached to authenticated user
+- **Input Validation**: Zod schema validation for all inputs
+- **Password Hashing**: bcrypt for secure password storage
+- **File Upload Security**: Type and size validation for uploads
 
-#### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
+## Available Scripts
 
-## Adapters
-
-The backend uses a pluggable adapter architecture for different data sources:
-
-### Mock Adapter (In-Memory)
-```sh
-npm run mock
-```
-Uses in-memory data for quick testing and development.
-
-### SQLite Adapter (Local Database)
-```sh
-# Seed the database
-npm run seed:sqlite
-
-# Start SQLite server
-npm run sqlite
-```
-
-The SQLite adapter provides:
-- **Persistent storage** with local SQLite file (`dev.sqlite`)
-- **Auto-schema creation** for users, products, and orders
-- **Seeded data** with sample users (hashed passwords), products, and orders
-- **Same API endpoints** as mock adapter
-
-### Turso Adapter (Cloud Database)
-```sh
-# Set environment variables (copy .env.example to .env)
-TURSO_URL=libsql://your-database.turso.io
-TURSO_AUTH_TOKEN=your-token
-
-# Run migration on Turso database
-# Execute migrations/001_init_tables.sql
-
-# Start Turso server
-npm run turso
+```bash
+npm start          # Start development server
+npm run build      # Compile TypeScript
+npm run lint       # Code quality check
+npm run migrate    # Run database migrations
+npm run start:prod # Start production server
+npm run clean      # Clean dist folder
 ```
 
-The Turso adapter provides:
-- **Cloud-hosted SQLite** with Turso
-- **Same interface** as SQLite adapter
-- **Production-ready** with remote persistence
-- **Environment-based configuration**
+## Tech Stack
 
-#### Database Schema (SQLite & Turso)
-- **Users**: `id`, `name`, `email`, `password` (bcrypt hashed)
-- **Products**: `id`, `name`, `price`, `stock`
-- **Orders**: `id`, `user_id`, `items_json`, `created_at`
+- **Runtime**: Node.js + TypeScript
+- **Framework**: Express.js
+- **Database**: Drizzle ORM + SQLite/Turso
+- **Auth**: JWT + bcrypt
+- **File Upload**: Multer
+- **Documentation**: Swagger/OpenAPI 3.0
+- **CORS**: Enabled for cross-origin requests
 
-## Architecture
+## Environment Variables
 
-- **TypeScript**: Full type safety with strict mode
-- **Adapters**: Pluggable interfaces for auth and database
-- **Mock Data**: In-memory storage for development
-- **SQLite**: Local database with persistent storage
-- **ESLint**: Code quality and consistency
-- **Express**: HTTP server framework
+```bash
+PORT=3000
+NODE_ENV=development
+JWT_SECRET=your-secret-key
+DATABASE_URL=file:./dev.sqlite
+# DATABASE_AUTH_TOKEN=turso-token  # For production
+```
 
-## Scripts
+## Product Schema
 
-- `npm run mock` - Start development server (in-memory data)
-- `npm run sqlite` - Start SQLite development server
-- `npm run turso` - Start Turso cloud database server
-- `npm run seed:sqlite` - Populate SQLite database with sample data
-- `npm run token` - Generate JWT token
-- `npm run build` - Compile TypeScript
-- `npm run lint` - Run linter
-- `npm run type-check` - Validate types
-- `npm start` - Run from TypeScript source
-- `npm run start:prod` - Run compiled JavaScript
+Supports enhanced product structure:
+```typescript
+Product {
+  id: string;
+  title: string;
+  author: string;
+  price: number;
+  category: "Case Study" | "Course" | "Guide";
+  description: string;
+  image: string;
+  rating: number;
+  reviews: number;
+  reviewsList?: Review[];
+}
+```
+
+## Development
+
+**From project root:**
+```bash
+npm run dev        # Start both frontend and backend
+npm run dev:backend # Backend only
+npm run dev:frontend # Frontend only
+```
+
+**CORS Configuration:**
+- Allows requests from localhost:5173 (frontend)
+- Supports credentials for authentication
+
+**API Endpoints:**
+- Base URL: http://localhost:3000/api
+- Documentation: http://localhost:3000/api-docs
+- Health Check: http://localhost:3000/healths

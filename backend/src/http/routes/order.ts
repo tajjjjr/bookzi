@@ -1,20 +1,18 @@
 import express from "express";
-import { OrderService } from "../../core/services/order.service.ts";
-import { OrderController } from "../controllers/order.controller.ts";
-import { authMiddleware } from "../middleware/auth.ts";
-import { validate } from "../middleware/validate.ts";
-import { CreateOrderSchema } from "../validation/order.schema.ts";
-import { DBAdapter } from "../../adapters/interfaces/DBAdapter.ts";
-import { AuthAdapter } from "../../adapters/interfaces/AuthAdapter.ts";
+import { OrderController } from "../controllers/order.controller.js";
+import { authMiddleware } from "../middleware/auth.js";
+import { AuthService } from "../../services/auth.service.js";
 
-export function createOrderRouter({ db, authAdapter }: { db: DBAdapter; authAdapter: AuthAdapter }): express.Router {
+export function createOrderRouter({ authService }: { authService: AuthService }): express.Router {
   const router = express.Router();
 
-  const orderService = new OrderService(db);
-  const controller = new OrderController(orderService);
+  const controller = new OrderController();
 
-  router.get("/", authMiddleware(authAdapter), controller.getAll);
-  router.post("/", authMiddleware(authAdapter), validate(CreateOrderSchema), controller.create);
+  router.get("/", authMiddleware(authService), controller.getAll);
+  router.get("/:id", authMiddleware(authService), controller.getById);
+  router.post("/", authMiddleware(authService), controller.create);
+  router.patch("/:id/status", authMiddleware(authService), controller.updateStatus);
+  router.post("/:id/cancel", authMiddleware(authService), controller.cancel);
 
   return router;
 }
