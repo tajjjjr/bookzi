@@ -43,11 +43,11 @@ const options = {
             title: { type: 'string' },
             author: { type: 'string' },
             description: { type: 'string' },
-            price: { type: 'number', description: 'Price in cents' },
-            currency: { type: 'string', default: 'USD' },
+            price: { type: 'integer', description: 'Price in cents' },
+            currency: { type: 'string', default: 'KES' },
             sku: { type: 'string' },
             stock: { type: 'integer' },
-            category: { type: 'string', enum: ['Case Study', 'Course', 'Guide'] },
+            category: { type: 'string' },
             slug: { type: 'string' },
             image: { type: 'string' },
             rating: { type: 'number', minimum: 0, maximum: 5 },
@@ -77,7 +77,17 @@ const options = {
             id: { type: 'string' },
             orderNumber: { type: 'string' },
             userId: { type: 'string' },
-            items: { type: 'string', description: 'JSON string of order items' },
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  productId: { type: 'string' },
+                  quantity: { type: 'integer' },
+                  price: { type: 'number' },
+                }
+              }
+            },
             subtotal: { type: 'number' },
             tax: { type: 'number' },
             shippingCost: { type: 'number' },
@@ -85,6 +95,8 @@ const options = {
             currency: { type: 'string' },
             status: { type: 'string' },
             customerEmail: { type: 'string', format: 'email' },
+            customerPhone: { type: 'string' },
+            notes: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' },
           },
         },
@@ -97,9 +109,11 @@ const options = {
             mimeType: { type: 'string' },
             size: { type: 'integer' },
             url: { type: 'string' },
+            path: { type: 'string' },
             entityType: { type: 'string' },
             entityId: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
           },
         },
         Error: {
@@ -223,7 +237,7 @@ const options = {
                     author: { type: 'string' },
                     description: { type: 'string' },
                     price: { type: 'integer' },
-                    currency: { type: 'string', default: 'USD' },
+                    currency: { type: 'string', default: 'KES' },
                     sku: { type: 'string' },
                     stock: { type: 'integer' },
                     category: { type: 'string', enum: ['Case Study', 'Course', 'Guide'] },
@@ -321,12 +335,23 @@ const options = {
                   type: 'object',
                   required: ['items', 'subtotal', 'tax', 'total', 'customerEmail'],
                   properties: {
-                    items: { type: 'string' },
+                    items: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          productId: { type: 'string' },
+                          quantity: { type: 'integer', minimum: 1 },
+                          price: { type: 'number' },
+                        },
+                        required: ['productId', 'quantity', 'price']
+                      }
+                    },
                     subtotal: { type: 'number' },
                     tax: { type: 'number' },
                     shippingCost: { type: 'number', default: 0 },
                     total: { type: 'number' },
-                    currency: { type: 'string', default: 'USD' },
+                    currency: { type: 'string', default: 'KES' },
                     customerEmail: { type: 'string', format: 'email' },
                     customerPhone: { type: 'string' },
                     notes: { type: 'string' },
