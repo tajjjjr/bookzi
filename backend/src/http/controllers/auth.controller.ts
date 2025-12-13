@@ -1,5 +1,17 @@
 import { Request, Response } from "express";
+import { body, validationResult } from "express-validator";
 import { AuthService } from "../../services/auth.service.js";
+
+export const loginValidation = [
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 6 })
+];
+
+export const registerValidation = [
+  body('name').trim().isLength({ min: 2, max: 50 }),
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 8 }).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+];
 
 export class AuthController {
   constructor(private authService: AuthService) {
@@ -9,12 +21,13 @@ export class AuthController {
 
   async login(req: Request, res: Response): Promise<void> {
     try {
-      const { email, password } = req.body;
-
-      if (!email || !password) {
-        res.status(400).json({ error: "Email and password are required" });
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ error: "Invalid input", details: errors.array() });
         return;
       }
+
+      const { email, password } = req.body;
 
       const user = await this.authService.validateCredentials(email, password);
       if (!user) {
@@ -38,12 +51,13 @@ export class AuthController {
 
   async register(req: Request, res: Response): Promise<void> {
     try {
-      const { name, email, password } = req.body;
-
-      if (!name || !email || !password) {
-        res.status(400).json({ error: "Name, email, and password are required" });
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ error: "Invalid input", details: errors.array() });
         return;
       }
+
+      const { name, email, password } = req.body;
 
       const emailExists = await this.authService.emailExists(email);
       if (emailExists) {
