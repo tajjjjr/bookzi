@@ -24,10 +24,10 @@ npm run dev &
 FRONTEND_PID=$!
 
 echo ""
-echo "✅ Servers started successfully!"
-echo "📱 Frontend: http://localhost:5173"
-echo "🔧 Backend API: http://localhost:3000"
-echo "📚 API Docs: http://localhost:3000/api-docs"
+echo "Servers started successfully!"
+echo "Frontend: http://localhost:5173"
+echo "Backend API: http://localhost:3000"
+echo "API Docs: http://localhost:3000/api-docs"
 echo ""
 echo "Press Ctrl+C to stop both servers"
 
