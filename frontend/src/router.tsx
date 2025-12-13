@@ -29,23 +29,25 @@ const router = createBrowserRouter([
         index: true,
         element: <LandingPage />,
       },
-    ],
-  },
-  {
-    path: "/shop",
-    element: <App />,
-    children: [
       {
-        index: true,
-        element: <LandingPage />,
-      },
-      {
-        path: ":id",
+        path: "product/:id",
         element: <ProductPage />,
       },
       {
-        path: "/shop/cart",
+        path: "cart",
         element: <CartPage />,
+      },
+      {
+        path: "checkout",
+        element: <Checkout />,
+      },
+      {
+        path: "thank-you",
+        element: <ThankYouPage />,
+      },
+      {
+        path: "auth",
+        element: <AuthPage />,
       },
       {
         path: "account",
@@ -68,22 +70,6 @@ const router = createBrowserRouter([
           },
         ]
       },
-      {
-        path: "account/review/:productId",
-        element: <CreateReviewPage />,
-      },
-      {
-        path: "/shop/checkout",
-        element: <Checkout />,
-      },
-      {
-        path: "/shop/thank-you",
-        element: <ThankYouPage />,
-      },
-      {
-        path: "/shop/auth",
-        element: <AuthPage />,
-      }
     ],
   },
 ]);
