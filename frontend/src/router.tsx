@@ -22,6 +22,16 @@ import AuthPage from "./components/AuthPage";
 
 const router = createBrowserRouter([
   {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+    ],
+  },
+  {
     path: "/shop",
     element: <App />,
     children: [
