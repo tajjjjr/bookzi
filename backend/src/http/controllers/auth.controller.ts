@@ -24,20 +24,44 @@ export class AuthController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(400).json({ error: "Invalid input", details: errors.array() });
+        res.status(400).json({ 
+          success: false,
+          error: "Invalid input", 
+          details: errors.array() 
+        });
         return;
       }
 
       const { email, password } = req.body;
 
+      if (!email || !password) {
+        res.status(400).json({ 
+          success: false,
+          error: "Email and password are required" 
+        });
+        return;
+      }
+
       const user = await this.authService.validateCredentials(email, password);
       if (!user) {
-        res.status(401).json({ error: "Invalid credentials" });
+        res.status(401).json({ 
+          success: false,
+          error: "Invalid email or password" 
+        });
+        return;
+      }
+
+      if (!user.isActive) {
+        res.status(403).json({ 
+          success: false,
+          error: "Account is deactivated" 
+        });
         return;
       }
 
       const token = this.authService.signToken(user);
       res.json({ 
+        success: true,
         token, 
         user: { 
           id: user.id, 
@@ -46,8 +70,12 @@ export class AuthController {
           email: user.email 
         } 
       });
-    } catch {
-      res.status(500).json({ error: "Login failed" });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: "An error occurred during login. Please try again." 
+      });
     }
   }
 
