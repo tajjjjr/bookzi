@@ -41,7 +41,7 @@ app.use("/api", createRouter({ db, authAdapter, productAdapter, attachmentAdapte
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 // Start server
-const PORT = 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Backend Auth server running on http://localhost:${PORT}`);
 });
