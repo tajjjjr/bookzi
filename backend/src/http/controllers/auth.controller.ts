@@ -83,15 +83,30 @@ export class AuthController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(400).json({ error: "Invalid input", details: errors.array() });
+        res.status(400).json({ 
+          success: false,
+          error: "Invalid input", 
+          details: errors.array() 
+        });
         return;
       }
 
       const { first_name, last_name, email, password } = req.body;
 
+      if (!first_name || !last_name || !email || !password) {
+        res.status(400).json({ 
+          success: false,
+          error: "First name, last name, email, and password are required" 
+        });
+        return;
+      }
+
       const emailExists = await this.authService.emailExists(email);
       if (emailExists) {
-        res.status(409).json({ error: "Email already exists" });
+        res.status(409).json({ 
+          success: false,
+          error: "An account with this email already exists" 
+        });
         return;
       }
 
@@ -99,15 +114,22 @@ export class AuthController {
       const token = this.authService.signToken(user);
 
       res.status(201).json({ 
+        success: true,
+        message: "Account created successfully",
         token, 
         user: { 
           id: user.id, 
-          name: user.name, 
+          first_name: user.first_name,
+          last_name: user.last_name, 
           email: user.email 
         } 
       });
-    } catch {
-      res.status(500).json({ error: "Registration failed" });
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: "An error occurred during registration. Please try again." 
+      });
     }
   }
 }
