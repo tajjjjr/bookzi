@@ -15,6 +15,13 @@
       "when": 1765492725368,
       "tag": "0001_wide_saracen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1765624727293,
+      "tag": "0002_jazzy_roulette",
+      "breakpoints": true
     }
   ]
 }

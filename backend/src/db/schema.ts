@@ -3,7 +3,12 @@ import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
+  first_name: text('first_name'),
+  last_name: text('last_name'),
   email: text('email').notNull().unique(),
+  phone_number: text('phone_number'),
+  country: text('country'),
+  zip_code: text('zip_code'),
   password: text('password').notNull(),
   role: text('role').default('user'),
   isActive: integer('isActive', { mode: 'boolean' }).default(true),
