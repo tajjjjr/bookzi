@@ -4,8 +4,16 @@ import swaggerUi from "swagger-ui-express";
 import { createRouter } from "./src/http/routes/routes.js";
 import { AuthService } from "./src/services/auth.service.js";
 import { specs } from "./src/swagger.js";
+import { runMigrations, checkMigrationsNeeded } from "./src/db/migrate.js";
 
 const app = express();
+
+// run migrations conditionally
+if (await checkMigrationsNeeded()) {
+  await runMigrations();
+} else {
+  console.log("[INFO] No migrations needed\n");
+}
 
 // Initialize services
 const authService = new AuthService(process.env.JWT_SECRET || "dev-secret");
