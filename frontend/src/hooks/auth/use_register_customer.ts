@@ -21,7 +21,7 @@ export const useRegisterCustomer = () => {
     setError(null);
 
     try {
-    const backendBaseURL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
+      const backendBaseURL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
       const response = await fetch(`${backendBaseURL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,28 +36,36 @@ export const useRegisterCustomer = () => {
         }),
       });
 
-      const data = await response.json();
-
+      // --- STEP 1: Check status BEFORE parsing JSON ---
       if (!response.ok) {
-        // Dynamic Error Messaging
         switch (response.status) {
+          case 429:
+            throw new Error("Too many requests. Please try again later.");
           case 409:
             throw new Error("This email is already registered.");
-          case 400:
-            throw new Error(data.message || "Please check your registration details.");
           case 500:
-            throw new Error("Server error during registration. Please try again later.");
+            throw new Error("Something went wrong. Please try again later.");
           default:
-            throw new Error(data.message || "Registration failed.");
+            // For 400 errors, try to get the JSON message if it exists
+            try {
+              const errorData = await response.json();
+              throw new Error(errorData.message || "Registration failed.");
+            } catch (jsonErr) {
+              // If body isn't JSON, use a generic message
+              throw new Error("Please check your registration details.");
+            }
         }
       }
 
-      // Automatically log the user in by saving the returned token/user
+      // --- STEP 2: Only parse JSON if response is 200 OK ---
+      const data = await response.json();
+
       localStorage.setItem("customer_token", data.token);
       localStorage.setItem("user_data", JSON.stringify(data.user));
 
       return data;
     } catch (err: any) {
+      // The "Too many requests" error thrown in the switch lands here
       setError(err.message);
       return null;
     } finally {
