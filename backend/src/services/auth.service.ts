@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { UserRepository } from '../repositories/user.repository.js';
 import { users } from '../db/schema.js';
+import { encrypt } from '../utils/encryption.js';
 
 export class AuthService {
   private jwtSecret: string;
@@ -38,15 +39,19 @@ export class AuthService {
     return isValid ? user : null;
   }
 
-  async createUser(userData: { name: string; email: string; password: string }): Promise<typeof users.$inferSelect> {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
+  async createUser(userData: { first_name: string; last_name: string; email: string; password: string; phone_number?: string; country?: string; zip_code?: string }): Promise<typeof users.$inferSelect> {
+    const hashedPassword = await bcrypt.hash(userData.password, 12);
     const now = new Date().toISOString();
     
     return await this.userRepo.create({
       id: randomUUID(),
-      name: userData.name,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
       email: userData.email,
       password: hashedPassword,
+      phone_number: userData.phone_number ? encrypt(userData.phone_number) : null,
+      country: userData.country || null,
+      zip_code: userData.zip_code ? encrypt(userData.zip_code) : null,
       role: 'user',
       isActive: true,
       createdAt: now,

@@ -27,8 +27,12 @@ const options = {
           type: 'object',
           properties: {
             id: { type: 'string' },
-            name: { type: 'string' },
+            first_name: { type: 'string' },
+            last_name: { type: 'string' },
             email: { type: 'string', format: 'email' },
+            phone_number: { type: 'string', description: 'Encrypted field' },
+            country: { type: 'string' },
+            zip_code: { type: 'string', description: 'Encrypted field' },
             role: { type: 'string', default: 'user' },
             isActive: { type: 'boolean' },
             createdAt: { type: 'string', format: 'date-time' },
@@ -43,11 +47,11 @@ const options = {
             title: { type: 'string' },
             author: { type: 'string' },
             description: { type: 'string' },
-            price: { type: 'number', description: 'Price in cents' },
-            currency: { type: 'string', default: 'USD' },
+            price: { type: 'integer', description: 'Price in cents' },
+            currency: { type: 'string', default: 'KES' },
             sku: { type: 'string' },
             stock: { type: 'integer' },
-            category: { type: 'string', enum: ['Case Study', 'Course', 'Guide'] },
+            category: { type: 'string' },
             slug: { type: 'string' },
             image: { type: 'string' },
             rating: { type: 'number', minimum: 0, maximum: 5 },
@@ -77,7 +81,17 @@ const options = {
             id: { type: 'string' },
             orderNumber: { type: 'string' },
             userId: { type: 'string' },
-            items: { type: 'string', description: 'JSON string of order items' },
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  productId: { type: 'string' },
+                  quantity: { type: 'integer' },
+                  price: { type: 'number' },
+                }
+              }
+            },
             subtotal: { type: 'number' },
             tax: { type: 'number' },
             shippingCost: { type: 'number' },
@@ -85,6 +99,8 @@ const options = {
             currency: { type: 'string' },
             status: { type: 'string' },
             customerEmail: { type: 'string', format: 'email' },
+            customerPhone: { type: 'string' },
+            notes: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' },
           },
         },
@@ -97,9 +113,11 @@ const options = {
             mimeType: { type: 'string' },
             size: { type: 'integer' },
             url: { type: 'string' },
+            path: { type: 'string' },
             entityType: { type: 'string' },
             entityId: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
           },
         },
         Error: {
@@ -115,17 +133,22 @@ const options = {
         post: {
           tags: ['Authentication'],
           summary: 'Register a new user',
+          description: 'Rate limited to 5 attempts per 15 minutes per IP',
           requestBody: {
             required: true,
             content: {
               'application/json': {
                 schema: {
                   type: 'object',
-                  required: ['name', 'email', 'password'],
+                  required: ['first_name', 'last_name', 'email', 'password'],
                   properties: {
-                    name: { type: 'string' },
+                    first_name: { type: 'string', minLength: 2, maxLength: 50 },
+                    last_name: { type: 'string', minLength: 2, maxLength: 50 },
                     email: { type: 'string', format: 'email' },
-                    password: { type: 'string', minLength: 6 },
+                    password: { type: 'string', minLength: 8, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)', description: 'Must contain lowercase, uppercase, and number' },
+                    phone_number: { type: 'string', description: 'Will be encrypted' },
+                    country: { type: 'string' },
+                    zip_code: { type: 'string', description: 'Will be encrypted' },
                   },
                 },
               },
@@ -139,6 +162,8 @@ const options = {
                   schema: {
                     type: 'object',
                     properties: {
+                      success: { type: 'boolean' },
+                      message: { type: 'string' },
                       token: { type: 'string' },
                       user: { $ref: '#/components/schemas/User' },
                     },
@@ -146,7 +171,9 @@ const options = {
                 },
               },
             },
-            409: { description: 'Email already exists', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            400: { description: 'Invalid input', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, error: { type: 'string' }, details: { type: 'array' } } } } } },
+            409: { description: 'Email already exists', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, error: { type: 'string' } } } } } },
+            429: { description: 'Too many authentication attempts', content: { 'application/json': { schema: { type: 'object', properties: { error: { type: 'string' } } } } } },
           },
         },
       },
@@ -154,6 +181,7 @@ const options = {
         post: {
           tags: ['Authentication'],
           summary: 'Login user',
+          description: 'Rate limited to 5 attempts per 15 minutes per IP',
           requestBody: {
             required: true,
             content: {
@@ -177,6 +205,7 @@ const options = {
                   schema: {
                     type: 'object',
                     properties: {
+                      success: { type: 'boolean' },
                       token: { type: 'string' },
                       user: { $ref: '#/components/schemas/User' },
                     },
@@ -184,7 +213,10 @@ const options = {
                 },
               },
             },
-            401: { description: 'Invalid credentials', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            400: { description: 'Invalid input', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, error: { type: 'string' }, details: { type: 'array' } } } } } },
+            401: { description: 'Invalid credentials or account deactivated', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, error: { type: 'string' } } } } } },
+            403: { description: 'Account deactivated', content: { 'application/json': { schema: { type: 'object', properties: { success: { type: 'boolean' }, error: { type: 'string' } } } } } },
+            429: { description: 'Too many authentication attempts', content: { 'application/json': { schema: { type: 'object', properties: { error: { type: 'string' } } } } } },
           },
         },
       },
@@ -192,6 +224,7 @@ const options = {
         get: {
           tags: ['Products'],
           summary: 'Get all products',
+          description: 'Rate limited to 100 requests per 15 minutes per IP',
           responses: {
             200: {
               description: 'List of products',
@@ -209,6 +242,7 @@ const options = {
         post: {
           tags: ['Products'],
           summary: 'Create a new product (with optional images)',
+          description: 'Rate limited to 100 requests per 15 minutes per IP',
           security: [{ bearerAuth: [] }],
           requestBody: {
             required: true,
@@ -223,7 +257,7 @@ const options = {
                     author: { type: 'string' },
                     description: { type: 'string' },
                     price: { type: 'integer' },
-                    currency: { type: 'string', default: 'USD' },
+                    currency: { type: 'string', default: 'KES' },
                     sku: { type: 'string' },
                     stock: { type: 'integer' },
                     category: { type: 'string', enum: ['Case Study', 'Course', 'Guide'] },
@@ -289,6 +323,7 @@ const options = {
         get: {
           tags: ['Orders'],
           summary: 'Get user orders',
+          description: 'Rate limited to 100 requests per 15 minutes per IP',
           security: [{ bearerAuth: [] }],
           responses: {
             200: {
@@ -321,12 +356,23 @@ const options = {
                   type: 'object',
                   required: ['items', 'subtotal', 'tax', 'total', 'customerEmail'],
                   properties: {
-                    items: { type: 'string' },
+                    items: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          productId: { type: 'string' },
+                          quantity: { type: 'integer', minimum: 1 },
+                          price: { type: 'number' },
+                        },
+                        required: ['productId', 'quantity', 'price']
+                      }
+                    },
                     subtotal: { type: 'number' },
                     tax: { type: 'number' },
                     shippingCost: { type: 'number', default: 0 },
                     total: { type: 'number' },
-                    currency: { type: 'string', default: 'USD' },
+                    currency: { type: 'string', default: 'KES' },
                     customerEmail: { type: 'string', format: 'email' },
                     customerPhone: { type: 'string' },
                     notes: { type: 'string' },

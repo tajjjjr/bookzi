@@ -45,6 +45,12 @@ export class OrderController {
       const orderData = req.body;
       // Always use the authenticated user's ID from JWT token
       orderData.userId = req.user!.id;
+      // Convert items array to JSON string for database storage
+      orderData.items = JSON.stringify(orderData.items);
+      // Set required default values
+      orderData.paymentStatus = 'pending';
+      orderData.fulfillmentStatus = 'pending';
+      orderData.status = 'pending';
       
       const order = await this.orderService.createOrder(orderData);
       res.status(201).json(order);
