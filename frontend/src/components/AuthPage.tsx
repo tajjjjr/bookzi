@@ -173,6 +173,7 @@ const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [registerStep, setRegisterStep] = useState(1);
   const [animate, setAnimate] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const {
     login,
     isLoading: isLoginLoading,
@@ -212,21 +213,58 @@ const AuthPage: React.FC = () => {
     zipCode: "",
   });
 
+  const fieldLabels: Record<string, string> = {
+    email: "Email",
+    password: "Password",
+    confirmPassword: "Confirm Password",
+    firstName: "First Name",
+    lastName: "Last Name",
+    phone: "Phone Number",
+    city: "City",
+    country: "Country",
+    zipCode: "Zip Code",
+  };
+
   const handleRegisterSubmit = async () => {
-    // 1. Client-side Check: Password Match
+    // Clear previous errors
+    setValidationError(null);
+
+    // 1. Check for missing fields
+    for (const [key, value] of Object.entries(formData)) {
+      // We skip profile picture check if it's optional
+      if (!value || value.trim() === "") {
+        const label = fieldLabels[key] || key;
+        setValidationError(`'${label}' is required.`);
+
+        // If the missing field is on Step 1, go back automatically
+        const step1Fields = [
+          "firstName",
+          "lastName",
+          "email",
+          "password",
+          "confirmPassword",
+          "phone",
+        ];
+        if (step1Fields.includes(key)) {
+          setRegisterStep(1);
+        }
+        return;
+      }
+    }
+
+    // 2. Client-side Check: Password Match
     if (formData.password !== formData.confirmPassword) {
-      // You can use a local state 'setError' or use the hook's error mechanism if accessible
-      alert("Passwords do not match!");
+      setValidationError("Passwords do not match!");
       return;
     }
 
-    // 2. Client-side Check: Basic Strength
+    // 3. Client-side Check: Basic Strength
     if (formData.password.length < 8) {
-      alert("Password must be at least 8 characters long.");
+      setValidationError("Password must be at least 8 characters long.");
       return;
     }
 
-    // 3. Call the Hook
+    // 4. Call the Hook
     const result = await register(formData);
     if (result) {
       window.location.href = "/shop";
@@ -355,9 +393,9 @@ const AuthPage: React.FC = () => {
                 // --- Registration Form (Paginated) ---
                 <>
                   {/* Display Error Message if login fails */}
-                  {registerError && (
+                  {(registerError || validationError) && (
                     <div className="text-red-500 text-xs bg-red-500/10 p-3 rounded-lg border border-red-500/20 animate-in fade-in zoom-in duration-200">
-                      {registerError}
+                      {validationError || registerError}
                     </div>
                   )}
                   <div className="space-y-4">
