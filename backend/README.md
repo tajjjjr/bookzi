@@ -18,11 +18,12 @@ npm run migrate
 npm start
 ```
 
-**API Documentation:** http://localhost:3000/api-docs
+**API Documentation:** <http://localhost:3000/api-docs>
 
 ## Architecture
 
 **Clean MVC + Repository Pattern:**
+
 - **Database Layer**: Drizzle ORM with SQLite (dev) / Turso (prod)
 - **Repository Layer**: Type-safe data access
 - **Service Layer**: Business logic
@@ -45,6 +46,7 @@ All API routes are prefixed with `/api` and protected routes require JWT authent
 ### Authentication
 
 #### Register User
+
 ```sh
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -56,6 +58,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 ```
 
 #### Login User
+
 ```sh
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -66,6 +69,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 ```
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -80,16 +84,19 @@ curl -X POST http://localhost:3000/api/auth/login \
 ### Products
 
 #### List Products
+
 ```sh
 curl http://localhost:3000/api/products
 ```
 
 #### Get Single Product
+
 ```sh
 curl http://localhost:3000/api/products/PRODUCT_ID
 ```
 
 #### Create Product (JSON)
+
 ```sh
 curl -X POST http://localhost:3000/api/products \
   -H "Content-Type: application/json" \
@@ -110,6 +117,7 @@ curl -X POST http://localhost:3000/api/products \
 ```
 
 #### Create Product with Images (Multipart)
+
 ```sh
 curl -X POST http://localhost:3000/api/products \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -119,6 +127,7 @@ curl -X POST http://localhost:3000/api/products \
 ```
 
 #### Update Product
+
 ```sh
 curl -X PUT http://localhost:3000/api/products/PRODUCT_ID \
   -H "Content-Type: application/json" \
@@ -131,6 +140,7 @@ curl -X PUT http://localhost:3000/api/products/PRODUCT_ID \
 ```
 
 #### Delete Product
+
 ```sh
 curl -X DELETE http://localhost:3000/api/products/PRODUCT_ID \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
@@ -139,18 +149,21 @@ curl -X DELETE http://localhost:3000/api/products/PRODUCT_ID \
 ### Orders (Protected Routes)
 
 #### List User Orders
+
 ```sh
 curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   "http://localhost:3000/api/orders?page=1&limit=10"
 ```
 
 #### Get Single Order
+
 ```sh
 curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   http://localhost:3000/api/orders/ORDER_ID
 ```
 
 #### Create Order
+
 ```sh
 curl -X POST http://localhost:3000/api/orders \
   -H "Content-Type: application/json" \
@@ -181,6 +194,7 @@ curl -X POST http://localhost:3000/api/orders \
 ```
 
 #### Update Order Status
+
 ```sh
 curl -X PATCH http://localhost:3000/api/orders/ORDER_ID/status \
   -H "Content-Type: application/json" \
@@ -189,6 +203,7 @@ curl -X PATCH http://localhost:3000/api/orders/ORDER_ID/status \
 ```
 
 #### Cancel Order
+
 ```sh
 curl -X POST http://localhost:3000/api/orders/ORDER_ID/cancel \
   -H "Content-Type: application/json" \
@@ -199,6 +214,7 @@ curl -X POST http://localhost:3000/api/orders/ORDER_ID/cancel \
 ### File Management
 
 #### Upload File
+
 ```sh
 curl -X POST http://localhost:3000/api/attachments/upload \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -206,6 +222,7 @@ curl -X POST http://localhost:3000/api/attachments/upload \
 ```
 
 #### Add Image to Product
+
 ```sh
 curl -X POST http://localhost:3000/api/products/PRODUCT_ID/images \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -213,18 +230,21 @@ curl -X POST http://localhost:3000/api/products/PRODUCT_ID/images \
 ```
 
 #### Remove Product Image
+
 ```sh
 curl -X DELETE http://localhost:3000/api/products/PRODUCT_ID/images/ATTACHMENT_ID \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 #### Set Default Product Image
+
 ```sh
 curl -X PUT http://localhost:3000/api/products/PRODUCT_ID/images/ATTACHMENT_ID/default \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 #### Get Files for Entity
+
 ```sh
 curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   http://localhost:3000/api/attachments/entity/product/PRODUCT_ID
@@ -233,6 +253,7 @@ curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
 ### Public Routes
 
 #### Health Check
+
 ```sh
 curl http://localhost:3000/health
 ```
@@ -254,6 +275,7 @@ npm run migrate
 ## Database Schema
 
 ### Users Table
+
 - `id` (TEXT PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `email` (TEXT UNIQUE NOT NULL)
@@ -262,6 +284,7 @@ npm run migrate
 - `updated_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
 
 ### Products Table
+
 - `id` (TEXT PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `description` (TEXT)
@@ -275,6 +298,7 @@ npm run migrate
 - `updated_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
 
 ### Orders Table
+
 - `id` (TEXT PRIMARY KEY)
 - `order_number` (TEXT UNIQUE NOT NULL)
 - `user_id` (TEXT NOT NULL)
@@ -292,6 +316,7 @@ npm run migrate
 - `updated_at` (DATETIME DEFAULT CURRENT_TIMESTAMP)
 
 ### Attachments Table
+
 - `id` (TEXT PRIMARY KEY)
 - `filename` (TEXT NOT NULL)
 - `original_name` (TEXT NOT NULL)
@@ -345,6 +370,7 @@ DATABASE_URL=file:./dev.sqlite
 ## Product Schema
 
 Supports enhanced product structure:
+
 ```typescript
 Product {
   id: string;
@@ -363,6 +389,7 @@ Product {
 ## Development
 
 **From project root:**
+
 ```bash
 npm run dev        # Start both frontend and backend
 npm run dev:backend # Backend only
@@ -370,10 +397,12 @@ npm run dev:frontend # Frontend only
 ```
 
 **CORS Configuration:**
+
 - Allows requests from localhost:5173 (frontend)
 - Supports credentials for authentication
 
 **API Endpoints:**
-- Base URL: http://localhost:3000/api
-- Documentation: http://localhost:3000/api-docs
-- Health Check: http://localhost:3000/healths
+
+- Base URL: <http://localhost:3000/api>
+- Documentation: <http://localhost:3000/api-docs>
+- Health Check: <http://localhost:3000/healths>
