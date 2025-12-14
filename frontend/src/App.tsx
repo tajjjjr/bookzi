@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import FloatingCart from "./components/FloatingCart";
 import { Footer } from "./components/Footer";
 
 export default function App() {
@@ -22,8 +23,9 @@ export default function App() {
     };
   }, [handleScroll]);
   return (
-    <div className="min-h-screen w-full bg-[#050505] text-white overflow-x-hidden selection:bg-[#CFFF24] selection:text-black">
+    <div className="min-h-screen w-full bg-[var(--background)] text-white overflow-x-hidden selection:bg-[var(--accent)] selection:text-black">
       <Navbar scrolled={isScrolled} />
+      <FloatingCart />
       <Outlet />
       <Footer />
     </div>
