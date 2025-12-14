@@ -90,7 +90,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled }) => {
 
         {/* MOBILE MENU BUTTON - Positioned absolutely on mobile */}
         <button
-          className="lg:hidden absolute right-4 sm:right-6 p-2 transition"
+          className="lg:hidden absolute left-4 sm:left-6 p-2 transition"
           style={{
             background: "transparent",
             border: "none",
@@ -109,7 +109,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled }) => {
         <div className="lg:hidden fixed top-0 left-0 w-full h-screen bg-gray-900/95 backdrop-blur-sm p-8 flex flex-col items-center justify-center">
           {/* CLOSE ICON */}
           <button
-            className="absolute top-6 right-6 p-2"
+            className="absolute top-6 left-6 p-2"
             style={{
               background: "transparent",
               border: "none",
