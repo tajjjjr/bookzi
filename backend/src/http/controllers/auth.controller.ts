@@ -159,10 +159,7 @@ export class AuthController {
       
       if (!user) {
         // Create new user from Google data
-        user = await this.authService.createGoogleUser({
-          ...googleData,
-          google_id: token // Use token as temp ID, should extract from payload
-        });
+        user = await this.authService.createGoogleUser(googleData);
       }
 
       if (!user.isActive) {

@@ -52,6 +52,9 @@ export class AuthService {
       last_name: userData.last_name,
       email: userData.email,
       password: hashedPassword,
+      google_id: null,
+      avatar_url: null,
+      auth_provider: 'local',
       phone_number: userData.phone_number ? encrypt(userData.phone_number) : null,
       country: userData.country || null,
       zip_code: userData.zip_code ? encrypt(userData.zip_code) : null,
@@ -67,7 +70,7 @@ export class AuthService {
     return !!user;
   }
 
-  async verifyGoogleToken(token: string): Promise<{ email: string; first_name: string; last_name: string; picture?: string } | null> {
+  async verifyGoogleToken(token: string): Promise<{ email: string; first_name: string; last_name: string; picture?: string; google_id: string } | null> {
     try {
       const ticket = await this.googleClient.verifyIdToken({
         idToken: token,
@@ -75,14 +78,15 @@ export class AuthService {
       });
       
       const payload = ticket.getPayload();
-      if (!payload || !payload.email) return null;
+      if (!payload || !payload.email || !payload.sub) return null;
       
       const nameParts = (payload.name || '').split(' ');
       return {
         email: payload.email,
         first_name: nameParts[0] || 'User',
         last_name: nameParts.slice(1).join(' ') || 'Account',
-        picture: payload.picture
+        picture: payload.picture,
+        google_id: payload.sub
       };
     } catch {
       return null;
