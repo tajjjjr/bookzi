@@ -180,6 +180,18 @@ const AuthPage: React.FC = () => {
     error: loginError,
   } = useLoginCustomer();
 
+  const handleGoogleSignIn = () => {
+    // Redirect to Google OAuth
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&` +
+      `redirect_uri=${encodeURIComponent(window.location.origin + '/auth')}&` +
+      `response_type=code&` +
+      `scope=openid email profile&` +
+      `access_type=offline`;
+    
+    window.location.href = googleAuthUrl;
+  };
+
   // Update metadata on mount
   useEffect(() => {
     const capitalized = mode === "login" ? "Login" : "Register";
@@ -331,7 +343,10 @@ const AuthPage: React.FC = () => {
             </p>
 
             {/* Google Auth Button - Width constrained by parent */}
-            <button className="w-full bg-transparent border border-gray-700 hover:border-gray-500 hover:bg-[#111] text-white rounded-full py-3 px-4 flex items-center justify-center gap-3 transition-all duration-200 group mb-6">
+            <button 
+              onClick={handleGoogleSignIn}
+              className="w-full bg-transparent border border-gray-700 hover:border-gray-500 hover:bg-[#111] text-white rounded-full py-3 px-4 flex items-center justify-center gap-3 transition-all duration-200 group mb-6"
+            >
               <GoogleIcon className="w-5 h-5" />
               <span className="font-medium text-sm">Sign in with Google</span>
             </button>
