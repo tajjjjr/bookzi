@@ -19,11 +19,13 @@ import NewsletterPreferencesPage from './components/NewsletterPreferencesPage';
 import CloseAccountPage from './components/CloseAccountPage';
 import ThankYouPage from "./components/ThankYouPage";
 import AuthPage from "./components/AuthPage";
+import Error from './components/Error';
 
 const router = createBrowserRouter([
   {
     path: "/shop",
     element: <App />,
+    errorElement: <Error />,
     children: [
       {
         index: true,
