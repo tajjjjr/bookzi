@@ -18,6 +18,7 @@ export class AuthController {
   constructor(private authService: AuthService) {
     this.login = this.login.bind(this);
     this.register = this.register.bind(this);
+    this.googleLogin = this.googleLogin.bind(this);
   }
 
   async login(req: Request, res: Response): Promise<void> {
@@ -129,6 +130,63 @@ export class AuthController {
       res.status(500).json({ 
         success: false,
         error: "An error occurred during registration. Please try again." 
+      });
+    }
+  }
+
+  async googleLogin(req: Request, res: Response): Promise<void> {
+    try {
+      const { token } = req.body;
+
+      if (!token) {
+        res.status(400).json({ 
+          success: false,
+          error: "Google token is required" 
+        });
+        return;
+      }
+
+      const googleData = await this.authService.verifyGoogleToken(token);
+      if (!googleData) {
+        res.status(401).json({ 
+          success: false,
+          error: "Invalid Google token" 
+        });
+        return;
+      }
+
+      let user = await this.authService.findByEmail(googleData.email);
+      
+      if (!user) {
+        // Create new user from Google data
+        user = await this.authService.createGoogleUser(googleData);
+      }
+
+      if (!user.isActive) {
+        res.status(403).json({ 
+          success: false,
+          error: "Account is deactivated" 
+        });
+        return;
+      }
+
+      const jwtToken = this.authService.signToken(user);
+      res.json({ 
+        success: true,
+        token: jwtToken, 
+        user: { 
+          id: user.id, 
+          first_name: user.first_name,
+          last_name: user.last_name, 
+          email: user.email,
+          avatar_url: user.avatar_url
+        } 
+      });
+    } catch (error) {
+      console.error('Google login error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: "An error occurred during Google login. Please try again." 
       });
     }
   }

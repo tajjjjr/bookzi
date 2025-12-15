@@ -18,6 +18,11 @@ export class UserRepository {
     return user;
   }
 
+  async findByGoogleId(googleId: string) {
+    const [user] = await db.select().from(users).where(eq(users.google_id, googleId));
+    return user;
+  }
+
   async update(id: string, userData: Partial<typeof users.$inferInsert>) {
     const [user] = await db.update(users).set(userData).where(eq(users.id, id)).returning();
     return user;

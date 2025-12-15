@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { useLoginCustomer } from "../hooks/auth/use_login_customer";
+import { useRegisterCustomer } from "../hooks/auth/use_register_customer";
 import { updateMeta } from "../lib/set_metadata";
 import { Button } from "./Button";
 import {
@@ -115,8 +118,15 @@ const InputField: React.FC<InputProps> = ({
   label,
   icon,
   className,
+  type,
   ...props
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const isPassword = type === "password";
+  // Toggle between 'text' and 'password' if it's a password field
+  const inputType = isPassword ? (showPassword ? "text" : "password") : type;
+
   return (
     <div className={`w-full ${className}`}>
       {label && (
@@ -125,15 +135,34 @@ const InputField: React.FC<InputProps> = ({
         </label>
       )}
       <div className="relative group">
+        {/* Left Icon (Custom Icon) */}
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 group-focus-within:text-[var(--accent)] transition-colors">
           {icon}
         </div>
+
         <input
-          className="w-full bg-[#0F0F0F] text-white border border-[#2A2A2A] rounded-xl py-3 pl-12 pr-4 text-sm 
-                     focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/50 
-                     placeholder-gray-600 transition-all duration-200 hover:border-gray-700"
           {...props}
+          type={inputType}
+          className={`w-full bg-[#0F0F0F] text-white border border-[#2A2A2A] rounded-xl py-3 pl-12 text-sm 
+                     focus:outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/50 
+                     placeholder-gray-600 transition-all duration-200 hover:border-gray-700
+                     ${isPassword ? "pr-12" : "pr-4"}`}
         />
+
+        {/* Right Icon (Password Toggle) */}
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-white transition-colors focus:outline-none"
+          >
+            {showPassword ? (
+              <EyeOff size={18} color="#CFFF24" strokeWidth={2} />
+            ) : (
+              <Eye size={18} strokeWidth={2} />
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -144,6 +173,24 @@ const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [registerStep, setRegisterStep] = useState(1);
   const [animate, setAnimate] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const {
+    login,
+    isLoading: isLoginLoading,
+    error: loginError,
+  } = useLoginCustomer();
+
+  const handleGoogleSignIn = () => {
+    // Redirect to Google OAuth
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&` +
+      `redirect_uri=${encodeURIComponent(window.location.origin + '/auth')}&` +
+      `response_type=code&` +
+      `scope=openid email profile&` +
+      `access_type=offline`;
+    
+    window.location.href = googleAuthUrl;
+  };
 
   // Update metadata on mount
   useEffect(() => {
@@ -159,6 +206,97 @@ const AuthPage: React.FC = () => {
 
     updateMeta("og:title", `TAJJJR – ${capitalized}`);
   }, [mode]);
+
+  const {
+    register,
+    isLoading: isRegisterLoading,
+    error: registerError,
+  } = useRegisterCustomer();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    city: "",
+    country: "",
+    zipCode: "",
+  });
+
+  const fieldLabels: Record<string, string> = {
+    email: "Email",
+    password: "Password",
+    confirmPassword: "Confirm Password",
+    firstName: "First Name",
+    lastName: "Last Name",
+    phone: "Phone Number",
+    city: "City",
+    country: "Country",
+    zipCode: "Zip Code",
+  };
+
+  const handleRegisterSubmit = async () => {
+    // Clear previous errors
+    setValidationError(null);
+
+    // 1. Check for missing fields
+    for (const [key, value] of Object.entries(formData)) {
+      // We skip profile picture check if it's optional
+      if (!value || value.trim() === "") {
+        const label = fieldLabels[key] || key;
+        setValidationError(`'${label}' is required.`);
+
+        // If the missing field is on Step 1, go back automatically
+        const step1Fields = [
+          "firstName",
+          "lastName",
+          "email",
+          "password",
+          "confirmPassword",
+          "phone",
+        ];
+        if (step1Fields.includes(key)) {
+          setRegisterStep(1);
+        }
+        return;
+      }
+    }
+
+    // 2. Client-side Check: Password Match
+    if (formData.password !== formData.confirmPassword) {
+      setValidationError("Passwords do not match!");
+      return;
+    }
+
+    // 3. Client-side Check: Basic Strength
+    if (formData.password.length < 8) {
+      setValidationError("Password must be at least 8 characters long.");
+      return;
+    }
+
+    // 4. Call the Hook
+    const result = await register(formData);
+    if (result) {
+      window.location.href = "/shop";
+    }
+  };
+
+  // Function to handle login form submission
+  const handleLoginSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    const result = await login({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (result) {
+      // Redirect to home or dashboard on success
+      window.location.href = "/shop";
+    }
+  };
 
   // Trigger animation on mount
   useEffect(() => {
@@ -205,7 +343,10 @@ const AuthPage: React.FC = () => {
             </p>
 
             {/* Google Auth Button - Width constrained by parent */}
-            <button className="w-full bg-transparent border border-gray-700 hover:border-gray-500 hover:bg-[#111] text-white rounded-full py-3 px-4 flex items-center justify-center gap-3 transition-all duration-200 group mb-6">
+            <button 
+              onClick={handleGoogleSignIn}
+              className="w-full bg-transparent border border-gray-700 hover:border-gray-500 hover:bg-[#111] text-white rounded-full py-3 px-4 flex items-center justify-center gap-3 transition-all duration-200 group mb-6"
+            >
               <GoogleIcon className="w-5 h-5" />
               <span className="font-medium text-sm">Sign in with Google</span>
             </button>
@@ -224,130 +365,220 @@ const AuthPage: React.FC = () => {
               {mode === "login" ? (
                 // --- Login Form ---
                 <>
+                  {/* Display Error Message if login fails */}
+                  {loginError && (
+                    <div className="text-red-500 text-xs bg-red-500/10 p-3 rounded-lg border border-red-500/20 animate-in fade-in zoom-in duration-200">
+                      {loginError}
+                    </div>
+                  )}
+
                   <InputField
                     type="email"
                     placeholder="Enter your email"
                     icon={<MailIcon className="w-5 h-5" />}
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                   />
                   <InputField
                     type="password"
                     placeholder="Enter your password"
                     icon={<LockIcon className="w-5 h-5" />}
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
                   />
 
                   <div className="flex items-center justify-between text-xs mt-2">
-                    <label className="flex items-center gap-2 cursor-pointer text-gray-400 hover:text-gray-300">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 rounded border-gray-700 bg-[#1A1A1A] text-[var(--accent)] focus:ring-[var(--accent)]"
-                      />
-                      Remember me
-                    </label>
-                    <a
-                      href="#"
-                      className="text-[var(--accent)] hover:underline decoration-[var(--accent)]/50 underline-offset-4 font-medium"
-                    >
-                      Forgot password?
-                    </a>
+                    {/* ... keep your Remember me / Forgot password code ... */}
                   </div>
 
                   {/* Submit Button */}
-                  <Button variant="primary" label="Login" className="w-full" />
+                  <Button
+                    variant="primary"
+                    label={isLoginLoading ? "Authenticating..." : "Login"}
+                    className="w-full"
+                    onClick={handleLoginSubmit}
+                    disabled={isLoginLoading}
+                  />
                 </>
               ) : (
                 // --- Registration Form (Paginated) ---
-                <div className="space-y-4">
-                  {registerStep === 1 ? (
-                    /* Step 1: Personal Details */
-                    <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <InputField
-                          placeholder="First Name"
-                          icon={<UserIcon className="w-5 h-5" />}
-                        />
-                        <InputField
-                          placeholder="Last Name"
-                          icon={<UserIcon className="w-5 h-5" />}
-                        />
-                      </div>
-
-                      <InputField
-                        type="email"
-                        placeholder="Email Address"
-                        icon={<MailIcon className="w-5 h-5" />}
-                      />
-
-                      <InputField
-                        type="tel"
-                        placeholder="Phone Number"
-                        icon={<PhoneIcon className="w-5 h-5" />}
-                      />
-
-                      {/* Step 1 Button */}
-                      <button
-                        onClick={() => setRegisterStep(2)}
-                        className="w-full bg-[var(--accent)] hover:bg-[#bce620] text-black text-sm py-3.5 rounded-full shadow-[0_0_20px_rgba(207,255,36,0.3)] hover:shadow-[0_0_30px_rgba(207,255,36,0.5)] transition-all duration-300 mt-6 flex items-center justify-center gap-2 group"
-                      >
-                        Next
-                        <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                      </button>
+                <>
+                  {/* Display Error Message if login fails */}
+                  {(registerError || validationError) && (
+                    <div className="text-red-500 text-xs bg-red-500/10 p-3 rounded-lg border border-red-500/20 animate-in fade-in zoom-in duration-200">
+                      {validationError || registerError}
                     </div>
-                  ) : (
-                    /* Step 2: Address & Image */
-                    <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <InputField
-                          placeholder="City"
-                          icon={<MapPinIcon className="w-5 h-5" />}
-                        />
-                        <InputField
-                          placeholder="Country"
-                          icon={<MapPinIcon className="w-5 h-5" />}
-                        />
-                      </div>
-
-                      <InputField
-                        placeholder="Zip Code"
-                        icon={<MapPinIcon className="w-5 h-5" />}
-                      />
-
-                      {/* Image Upload Field */}
-                      <div className="w-full">
-                        <label className="block text-xs font-medium text-gray-400 mb-1.5 ml-1">
-                          Profile Picture (Optional)
-                        </label>
-                        <div className="relative border border-dashed border-gray-700 bg-[#0F0F0F] rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--accent)] hover:bg-[#151515] transition-all group">
-                          <input
-                            type="file"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            accept="image/*"
+                  )}
+                  <div className="space-y-4">
+                    {registerStep === 1 ? (
+                      /* Step 1: Personal Details */
+                      <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <InputField
+                            placeholder="First name"
+                            icon={<UserIcon className="w-5 h-5" />}
+                            value={formData.firstName}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                firstName: e.target.value,
+                              })
+                            }
                           />
-                          <div className="p-2 bg-[#1A1A1A] rounded-full text-gray-400 group-hover:text-[var(--accent)] group-hover:bg-[#222] transition-colors mb-2">
-                            <UploadIcon className="w-5 h-5" />
-                          </div>
-                          <p className="text-xs text-gray-300 font-medium">
-                            Click to upload image
-                          </p>
+                          <InputField
+                            placeholder="Last name"
+                            icon={<UserIcon className="w-5 h-5" />}
+                            value={formData.lastName}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                lastName: e.target.value,
+                              })
+                            }
+                          />
                         </div>
-                      </div>
 
-                      <div className="flex gap-3 mt-6">
-                        <button
-                          onClick={() => setRegisterStep(1)}
-                          className="w-1/3 bg-[#1A1A1A] hover:bg-[#252525] text-white font-bold text-sm py-3.5 rounded-full border border-gray-800 transition-all duration-300 flex items-center justify-center gap-2 group"
-                        >
-                          <ArrowLeftIcon className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                        </button>
+                        <InputField
+                          type="email"
+                          placeholder="Email address"
+                          icon={<MailIcon className="w-5 h-5" />}
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <InputField
+                            type="password"
+                            placeholder="Enter password"
+                            icon={<LockIcon className="w-5 h-5" />}
+                            value={formData.password}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                password: e.target.value,
+                              })
+                            }
+                          />
+                          <InputField
+                            type="password"
+                            placeholder="Confirm password"
+                            icon={<LockIcon className="w-5 h-5" />}
+                            value={formData.confirmPassword}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                confirmPassword: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        <InputField
+                          type="tel"
+                          placeholder="Phone number"
+                          icon={<PhoneIcon className="w-5 h-5" />}
+                          value={formData.phone}
+                          onChange={(e) =>
+                            setFormData({ ...formData, phone: e.target.value })
+                          }
+                        />
+
+                        {/* Step 1 Button */}
                         <Button
                           variant="primary"
-                          label="Create Account"
+                          label="Next"
+                          icon={ArrowRightIcon}
                           className="w-full"
                           onClick={() => setRegisterStep(2)}
                         />
                       </div>
-                    </div>
-                  )}
-                </div>
+                    ) : (
+                      /* Step 2: Address & Image */
+                      <div className="animate-in fade-in slide-in-from-right-4 duration-300 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <InputField
+                            placeholder="City"
+                            icon={<MapPinIcon className="w-5 h-5" />}
+                            value={formData.city}
+                            onChange={(e) =>
+                              setFormData({ ...formData, city: e.target.value })
+                            }
+                          />
+                          <InputField
+                            placeholder="Country"
+                            icon={<MapPinIcon className="w-5 h-5" />}
+                            value={formData.country}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                country: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        <InputField
+                          placeholder="Zip Code"
+                          icon={<MapPinIcon className="w-5 h-5" />}
+                          value={formData.zipCode}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              zipCode: e.target.value,
+                            })
+                          }
+                        />
+
+                        {/* Image Upload Field */}
+                        <div className="w-full">
+                          <label className="block text-xs font-medium text-gray-400 mb-1.5 ml-1">
+                            Profile Picture (Optional)
+                          </label>
+                          <div className="relative border border-dashed border-gray-700 bg-[#0F0F0F] rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--accent)] hover:bg-[#151515] transition-all group">
+                            <input
+                              type="file"
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                              accept="image/*"
+                            />
+                            <div className="p-2 bg-[#1A1A1A] rounded-full text-gray-400 group-hover:text-[var(--accent)] group-hover:bg-[#222] transition-colors mb-2">
+                              <UploadIcon className="w-5 h-5" />
+                            </div>
+                            <p className="text-xs text-gray-300 font-medium">
+                              Click to upload image
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3 mt-6">
+                          <Button
+                            variant="secondary"
+                            label=""
+                            icon={ArrowLeftIcon}
+                            iconPlacement="left"
+                            onClick={() => setRegisterStep(1)}
+                          />
+                          <Button
+                            variant="primary"
+                            label={
+                              isRegisterLoading
+                                ? "Creating Account..."
+                                : "Create Account"
+                            }
+                            className="w-full"
+                            onClick={handleRegisterSubmit}
+                            disabled={isRegisterLoading}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </form>
 
