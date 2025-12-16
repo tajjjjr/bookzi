@@ -3,7 +3,7 @@ import App from './App';
 import LandingPage from './components/LandingPage';
 import ProductPage from './components/ProductPage';
 import CartPage from './components/CartPage';
-import AccountPage from './components/AccountPage';
+import AccountOverviewPage from './components/AccountPage';
 import CreateReviewPage from './components/CreateReviewPage';
 import Checkout from './components/Checkout';
 import AccountLayout from './components/AccountLayout';
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
         path: "account",
         element: <AccountLayout />,
         children: [
-          { index: true, element: <AccountPage /> },
+          { index: true, element: <AccountOverviewPage /> },
           { path: "orders", element: <OrdersPage /> },
           { path: "inbox", element: <InboxPage /> },
           { path: "pending-reviews", element: <PendingReviewsPage /> },
