@@ -14,8 +14,8 @@ const WishlistPage: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {wishlistItems.map((product: Product) => (
-                    <div key={product.id} className="bg-[#0f0f0f] border border-white/10 group hover:border-[#CFFF24]/50 transition-colors rounded-none">
-                        <div className="relative aspect-[4/5] overflow-hidden bg-[#1a1a1a]">
+                    <div key={product.id} className="bg-[#0f0f0f] border border-white/10 group hover:border-[#CFFF24]/50 transition-colors rounded-2xl">
+                        <div className="relative aspect-[4/5] overflow-hidden bg-[#1a1a1a] rounded-t-2xl">
                             <img
                                 src={product.image}
                                 alt={product.title}
@@ -28,7 +28,8 @@ const WishlistPage: React.FC = () => {
                         <div className="p-4">
                             <h3 className="font-bold text-white mb-1 truncate">{product.title}</h3>
                             <p className="text-sm text-gray-400 mb-4">${product.price}</p>
-                            <button className="w-full py-2 bg-white/5 hover:bg-[#CFFF24] hover:text-black text-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                            {/* rounded-full text-black font-bold uppercase tracking-widest hover:bg-accent-dark hover:shadow-[0_0_30px_rgba(207,255,36,0.6)] hover:cursor-pointer */}
+                            <button className="w-full py-2 bg-[#CFFF24] rounded-full text-black text-xs font-bold uppercase tracking-widest transition-colors hover:bg-accent-dark hover:shadow-[0_0_30px_rgba(207,255,36,0.6)] hover:cursor-pointer flex items-center justify-center gap-2">
                                 <ShoppingCart size={14} />
                                 Add to Cart
                             </button>

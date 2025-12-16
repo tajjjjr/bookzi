@@ -23,7 +23,7 @@ const PaymentSettingsPage: React.FC = () => {
                     </button>
                 </div>
                 <div className="mt-6">
-                    <button className="px-6 py-3 bg-[#CFFF24] text-black font-bold uppercase tracking-widest text-sm hover:bg-white hover:!text-black transition-colors">
+                    <button className="px-6 py-3 bg-[#CFFF24] text-black font-bold uppercase tracking-widest text-sm rounded-full hover:bg-accent-dark hover:shadow-[0_0_30px_rgba(207,255,36,0.6)] hover:cursor-pointer hover:!text-black transition-colors">
                         Add New Card
                     </button>
                 </div>

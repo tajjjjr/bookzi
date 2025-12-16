@@ -36,7 +36,7 @@ const NewsletterPreferencesPage: React.FC = () => {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-white/10">
-                    <button className="bg-[#CFFF24] text-black px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-white transition-colors">
+                    <button className="bg-[#CFFF24] text-black px-8 py-3 text-sm font-bold uppercase tracking-widest rounded-full hover:bg-accent-dark hover:shadow-[0_0_30px_rgba(207,255,36,0.6)] hover:cursor-pointer transition-colors">
                         Save Preferences
                     </button>
                 </div>
