@@ -10,8 +10,8 @@ const InboxPage: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-bold uppercase tracking-wide border-l-4 border-[#CFFF24] pl-4">
-                Inbox
+            <h2 className="text-xl font-bold uppercase tracking-wide">
+                <span className="text-[#CFFF24]">My</span> Inbox
             </h2>
             <div className="space-y-4">
                 {messages.map((msg) => (

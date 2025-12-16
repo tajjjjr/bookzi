@@ -3,8 +3,8 @@ import React from 'react';
 const NewsletterPreferencesPage: React.FC = () => {
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-bold uppercase tracking-wide border-l-4 border-[#CFFF24] pl-4">
-                Newsletter Preferences
+            <h2 className="text-xl font-bold uppercase tracking-wide">
+                <span className="text-[#CFFF24]">Newsletter</span> Preferences
             </h2>
             <div className="bg-[#0f0f0f] border border-white/10 p-8 rounded-none">
                 <p className="text-gray-400 mb-6">Manage your email subscription preferences.</p>

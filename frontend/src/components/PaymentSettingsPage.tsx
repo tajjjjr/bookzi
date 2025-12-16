@@ -4,8 +4,8 @@ import { CreditCard, Trash2 } from 'lucide-react';
 const PaymentSettingsPage: React.FC = () => {
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-bold uppercase tracking-wide border-l-4 border-[#CFFF24] pl-4">
-                Payment Settings
+            <h2 className="text-xl font-bold uppercase tracking-wide">
+                <span className="text-[#CFFF24]">Payment</span> Settings
             </h2>
             <div className="bg-[#0f0f0f] border border-white/10 p-6 rounded-none">
                 <div className="flex items-center justify-between mb-6">

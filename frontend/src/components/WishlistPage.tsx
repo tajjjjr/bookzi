@@ -9,8 +9,8 @@ const WishlistPage: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-bold uppercase tracking-wide border-l-4 border-[#CFFF24] pl-4">
-                Wishlist
+            <h2 className="text-xl font-bold uppercase tracking-wide">
+                <span className="text-[#CFFF24]">My</span> Wishlist
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {wishlistItems.map((product: Product) => (
