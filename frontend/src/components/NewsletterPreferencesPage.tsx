@@ -3,8 +3,8 @@ import React from 'react';
 const NewsletterPreferencesPage: React.FC = () => {
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-bold uppercase tracking-wide border-l-4 border-[#CFFF24] pl-4">
-                Newsletter Preferences
+            <h2 className="text-xl font-bold uppercase tracking-wide">
+                <span className="text-[#CFFF24]">Newsletter</span> Preferences
             </h2>
             <div className="bg-[#0f0f0f] border border-white/10 p-8 rounded-none">
                 <p className="text-gray-400 mb-6">Manage your email subscription preferences.</p>
@@ -36,7 +36,7 @@ const NewsletterPreferencesPage: React.FC = () => {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-white/10">
-                    <button className="bg-[#CFFF24] text-black px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-white transition-colors">
+                    <button className="bg-[#CFFF24] text-black px-8 py-3 text-sm font-bold uppercase tracking-widest rounded-full hover:bg-accent-dark hover:shadow-[0_0_30px_rgba(207,255,36,0.6)] hover:cursor-pointer transition-colors">
                         Save Preferences
                     </button>
                 </div>

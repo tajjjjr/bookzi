@@ -4,8 +4,8 @@ import { MapPin, Edit2 } from 'lucide-react';
 const AddressBookPage: React.FC = () => {
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-bold uppercase tracking-wide border-l-4 border-[#CFFF24] pl-4">
-                Address Book
+            <h2 className="text-xl font-bold uppercase tracking-wide">
+                <span className="text-[#CFFF24]">Address</span> Book
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-[#0f0f0f] border border-[#CFFF24] p-6 relative rounded-none">

@@ -32,7 +32,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ image, title }) => {
                     <img
                         src={image}
                         alt={title}
-                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500"
+                        className="w-full h-full object-cover rounded-2xl opacity-90 group-hover:opacity-100 transition-opacity duration-500"
                     />
 
                     {/* Overlay gradient */}

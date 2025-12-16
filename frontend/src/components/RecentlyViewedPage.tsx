@@ -9,17 +9,17 @@ const RecentlyViewedPage: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-bold uppercase tracking-wide border-l-4 border-[#CFFF24] pl-4">
-                Recently Viewed
+            <h2 className="text-xl font-bold uppercase tracking-wide">
+                <span className="text-[#CFFF24]">Recently</span> Viewed
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {recentItems.map((product: Product) => (
-                    <div key={product.id} className="bg-[#0f0f0f] border border-white/10 group hover:border-[#CFFF24]/50 transition-colors rounded-none">
-                        <div className="relative aspect-square overflow-hidden bg-[#1a1a1a]">
+                    <div key={product.id} className="bg-[#0f0f0f] border border-white/10 group hover:border-[#CFFF24]/50 transition-colors rounded-2xl">
+                        <div className="relative aspect-square overflow-hidden bg-[#1a1a1a] rounded-t-2xl">
                             <img
                                 src={product.image}
                                 alt={product.title}
-                                className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
+                                className="w-full h-full object-cover opacity-60 rounded-t-2xl group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
                             />
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
                                 <Eye size={24} className="text-[#CFFF24]" />

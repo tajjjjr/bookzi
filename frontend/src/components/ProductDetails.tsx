@@ -74,7 +74,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
                     </div>
 
                     {/* Add to Cart Button */}
-                    <button className="w-full h-14 bg-[#CFFF24] text-black font-bold uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2 group">
+                    <button className="w-full h-14 bg-[#CFFF24] rounded-full text-black font-bold uppercase tracking-widest hover:bg-accent-dark hover:shadow-[0_0_30px_rgba(207,255,36,0.6)] hover:cursor-pointer flex items-center justify-center gap-2 group">
                         <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
                         Add to Cart
                     </button>
