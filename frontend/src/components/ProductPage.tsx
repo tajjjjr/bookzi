@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { ALL_PRODUCTS } from '../constants/landing_page_constants';
+import { useProductById } from '../hooks/useProductHooks';
 import ProductGallery from './ProductGallery';
 import ProductDetails from './ProductDetails';
 import ReviewSnippet from './ReviewSnippet';
@@ -10,16 +10,28 @@ import ReviewList from './ReviewList';
 const ProductPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [showAllReviews, setShowAllReviews] = React.useState(false);
-    const product = ALL_PRODUCTS.find((p) => p.id === id);
+    const { product, loading, error } = useProductById(id || null);
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id]);
 
-    if (!product) {
+    if (loading) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-[#050505] text-white">
+                <div className="animate-pulse">
+                    <div className="w-16 h-16 border-4 border-[#CFFF24] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <p className="mt-4 text-gray-400">Loading product...</p>
+            </div>
+        );
+    }
+
+    if (error || !product) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#050505] text-white">
                 <h2 className="text-2xl font-bold mb-4">Product Not Found</h2>
+                <p className="text-gray-400 mb-6">{error || 'The product you are looking for does not exist.'}</p>
                 <Link to="/shop" className="text-[#CFFF24] hover:underline">
                     Return to Shop
                 </Link>
@@ -28,7 +40,7 @@ const ProductPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white pt-20 pb-20">
+        <div className="min-h-screen bg-[#050505] text-white pt-20 pb-20 mt-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Breadcrumb / Back Link */}

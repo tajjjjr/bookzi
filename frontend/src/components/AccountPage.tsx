@@ -27,8 +27,8 @@ const AccountPage: React.FC = () => {
 
             {/* Pending Reviews Section */}
             <div className="space-y-6">
-                <h2 className="text-xl font-bold uppercase tracking-wide border-l-4 border-[#CFFF24] pl-4">
-                    Pending Reviews
+                <h2 className="text-xl font-bold uppercase tracking-wide">
+                    <span className="text-[#CFFF24]">Pending</span> Reviews
                 </h2>
 
                 <div className="space-y-4">
